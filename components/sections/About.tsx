@@ -1,118 +1,148 @@
 "use client";
 
 import React from "react";
-import { GlassCard } from "@/components/ui/GlassCard";
+import Image from "next/image";
+import { personalData } from "@/data/personal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { MotionSection } from "@/components/ui/MotionSection";
-import { personalData } from "@/data/personal";
-import { Brain, Cpu, Database, Network, UserCheck } from "lucide-react";
-import { motion, useReducedMotion, Variants } from "framer-motion";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { motion, useReducedMotion } from "framer-motion";
+import { Brain, Database, Code2, Layers, GraduationCap, Cpu } from "lucide-react";
 
-const pillars = [
+const focusAreas = [
   {
     icon: Brain,
-    title: "Machine Learning & Deep Neural Nets",
-    desc: "Developing and fine-tuning predictive algorithms, CNNs, and sequence models using TensorFlow & Scikit-learn.",
-  },
-  {
-    icon: Network,
-    title: "NLP & LLM Applications",
-    desc: "Architecting document extraction pipelines, embedding workflows, and generative agents using the Gemini API.",
+    title: "Machine Learning",
+    color: "text-purple-400",
+    bg: "bg-purple-950/40 border-purple-500/20",
+    desc: "Neural architectures, deep learning, NLP pipelines, LLM integrations.",
   },
   {
     icon: Database,
-    title: "Data Engineering & Analytics",
-    desc: "Cleaning, structuring, and exploring complex datasets using Pandas, NumPy, and relational SQL engines.",
+    title: "Data Engineering",
+    color: "text-blue-400",
+    bg: "bg-blue-950/40 border-blue-500/20",
+    desc: "End-to-end data pipelines, preprocessing, statistical analysis.",
   },
   {
-    icon: Cpu,
-    title: "Deployment & Practical AI",
-    desc: "Bridging model experimentation into production via FastAPI, Docker containers, and responsive Next.js apps.",
+    icon: Code2,
+    title: "Software Engineering",
+    color: "text-cyan-400",
+    bg: "bg-cyan-950/40 border-cyan-500/20",
+    desc: "Production APIs, full-stack web, containerized microservices.",
+  },
+  {
+    icon: Layers,
+    title: "AI Systems",
+    color: "text-emerald-400",
+    bg: "bg-emerald-950/40 border-emerald-500/20",
+    desc: "Designing and deploying practical, real-world intelligent systems.",
   },
 ];
+
+const stats = [
+  { icon: GraduationCap, label: "Institution", value: "VIT Vellore" },
+  { icon: Cpu, label: "CGPA", value: "8.13 / 10" },
+];
+
+const itemV = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" as const, delay: i * 0.09 },
+  }),
+};
 
 export const About: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
-  const cardVariants: Variants = {
-    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-    },
-  };
-
   return (
-    <MotionSection id="about" className="py-16 md:py-20 px-4 md:px-8">
-      <div className="max-w-5xl mx-auto">
-        <SectionHeading
-          title="About Me"
-          subtitle="Engineering pragmatic AI solutions grounded in rigorous data science and modern software principles."
-          badge="Background"
-          icon={UserCheck}
-        />
+    <MotionSection id="about">
+      <SectionHeading
+        title="About"
+        subtitle="Building intelligent systems at the intersection of data, algorithms, and engineering."
+        accentColor="blue"
+      />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          {/* Main Bio Card */}
-          <GlassCard glow="cyan" className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.15)]">
-                  <Brain className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold text-white">Data Science & AI Focus</h3>
-                  <p className="text-xs text-cyan-400/80">VIT Vellore • B.Tech CSE (DS)</p>
-                </div>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+
+        {/* Left: bio + stats */}
+        <div className="lg:col-span-3 space-y-6">
+          {personalData.aboutBio.map((para, i) => (
+            <motion.p
+              key={i}
+              custom={i}
+              variants={shouldReduceMotion ? undefined : itemV}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="text-slate-400 leading-relaxed text-sm sm:text-base"
+            >
+              {para}
+            </motion.p>
+          ))}
+
+          {/* Stat chips */}
+          <motion.div
+            custom={3}
+            variants={shouldReduceMotion ? undefined : itemV}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="flex flex-wrap gap-3 pt-2"
+          >
+            {stats.map(({ icon: Icon, label, value }) => (
+              <div
+                key={label}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0a1628]/80 border border-white/8 text-sm"
+              >
+                <Icon className="w-4 h-4 text-cyan-400" />
+                <span className="text-slate-500 text-xs">{label}:</span>
+                <span className="text-white font-semibold text-xs">{value}</span>
               </div>
+            ))}
+          </motion.div>
+        </div>
 
-              <div className="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed">
-                {personalData.aboutBio.map((paragraph, idx) => (
-                  <p key={idx}>{paragraph}</p>
-                ))}
-              </div>
-            </div>
+        {/* Right: skills image + focus areas */}
+        <div className="lg:col-span-2 space-y-4">
+          {/* Skills visual */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="relative rounded-2xl overflow-hidden aspect-[4/3] border border-white/8"
+          >
+            <Image
+              src={personalData.skillsHandUrl}
+              alt="Technical skills visualization"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 40vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050814]/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5" />
+          </motion.div>
 
-            {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-6 border-t border-sky-500/10">
-              {personalData.stats.map((stat, idx) => (
-                <motion.div
-                  key={idx}
-                  whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-                  className="p-2.5 rounded-xl bg-[#091226]/60 border border-sky-500/10 text-center transition-colors hover:border-cyan-500/30"
-                >
-                  <div className="text-xs text-slate-400 font-medium">{stat.label}</div>
-                  <div className="text-base sm:text-lg font-bold text-cyan-300 my-0.5">{stat.value}</div>
-                  <div className="text-[11px] text-slate-500">{stat.subtext}</div>
-                </motion.div>
-              ))}
-            </div>
-          </GlassCard>
-
-          {/* Pillars Column */}
-          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-            {pillars.map((pillar, idx) => {
-              const Icon = pillar.icon;
+          {/* Focus area cards */}
+          <div className="grid grid-cols-2 gap-3">
+            {focusAreas.map((area, i) => {
+              const Icon = area.icon;
               return (
                 <motion.div
-                  key={idx}
-                  variants={cardVariants}
-                  whileHover={shouldReduceMotion ? undefined : { x: 4 }}
-                  transition={{ duration: 0.2 }}
+                  key={area.title}
+                  custom={i}
+                  variants={shouldReduceMotion ? undefined : itemV}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className={`p-3.5 rounded-xl border text-left ${area.bg} backdrop-blur-sm`}
                 >
-                  <GlassCard
-                    hoverEffect
-                    className="p-5 h-full flex items-start gap-4 border-sky-500/15"
-                  >
-                    <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shrink-0 text-cyan-400">
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-white mb-1">{pillar.title}</h4>
-                      <p className="text-xs text-slate-400 leading-relaxed">{pillar.desc}</p>
-                    </div>
-                  </GlassCard>
+                  <Icon className={`w-5 h-5 mb-2 ${area.color}`} />
+                  <p className="text-white text-xs font-semibold mb-1">{area.title}</p>
+                  <p className="text-slate-500 text-[10px] leading-relaxed">{area.desc}</p>
                 </motion.div>
               );
             })}
