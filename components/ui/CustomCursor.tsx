@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export const CustomCursor: React.FC = () => {
@@ -9,16 +9,39 @@ export const CustomCursor: React.FC = () => {
   const [label, setLabel] = useState("");
   const isVisible = useRef(false);
 
+  // Fast center dot
   const rawX = useMotionValue(-100);
   const rawY = useMotionValue(-100);
-  const springCfg = { stiffness: 420, damping: 30, mass: 0.5 };
-  const x = useSpring(rawX, springCfg);
-  const y = useSpring(rawY, springCfg);
+  const dotSpringCfg = { stiffness: 850, damping: 45, mass: 0.2 };
+  const x = useSpring(rawX, dotSpringCfg);
+  const y = useSpring(rawY, dotSpringCfg);
 
-  // Slow follower for glow ring
-  const glowSpringCfg = { stiffness: 90, damping: 18, mass: 0.8 };
-  const gx = useSpring(rawX, glowSpringCfg);
-  const gy = useSpring(rawY, glowSpringCfg);
+  // Smooth lag trailing ring
+  const ringSpringCfg = { stiffness: 220, damping: 25, mass: 0.6 };
+  const rx = useSpring(rawX, ringSpringCfg);
+  const ry = useSpring(rawY, ringSpringCfg);
+
+  const checkTarget = useCallback((e: MouseEvent) => {
+    const el = e.target as HTMLElement;
+    if (!el) return;
+
+    const projectEl = el.closest("[data-cursor-project]");
+    const interactiveEl =
+      el.closest("a, button, [role='button'], input, textarea, select") ||
+      el.closest("[data-cursor-hover]");
+
+    if (projectEl) {
+      setCursorType("project");
+      const customLabel = projectEl.getAttribute("data-cursor-label") || "INSPECT ↗";
+      setLabel(customLabel);
+    } else if (interactiveEl) {
+      setCursorType("hover");
+      setLabel("");
+    } else {
+      setCursorType("default");
+      setLabel("");
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -35,25 +58,6 @@ export const CustomCursor: React.FC = () => {
       }
     };
 
-    const checkTarget = (e: MouseEvent) => {
-      const el = e.target as HTMLElement;
-      const isProjectCard = !!el.closest("[data-cursor-project]");
-      const isInteractive =
-        !!el.closest("a, button, [role='button'], input, textarea, select") ||
-        !!el.closest("[data-cursor-hover]");
-
-      if (isProjectCard) {
-        setCursorType("project");
-        setLabel(el.closest("[data-cursor-project]")?.getAttribute("data-cursor-label") ?? "VIEW");
-      } else if (isInteractive) {
-        setCursorType("hover");
-        setLabel("");
-      } else {
-        setCursorType("default");
-        setLabel("");
-      }
-    };
-
     window.addEventListener("mousemove", move, { passive: true });
     window.addEventListener("mousemove", checkTarget, { passive: true });
 
@@ -61,38 +65,46 @@ export const CustomCursor: React.FC = () => {
       window.removeEventListener("mousemove", move);
       window.removeEventListener("mousemove", checkTarget);
     };
-  }, [rawX, rawY]);
+  }, [rawX, rawY, checkTarget]);
 
   if (isTouchDevice) return null;
 
   return (
     <>
-      {/* Outer glow ring — slow follower */}
+      {/* ─── Trailing Ring ─── */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9998]"
         style={{
-          x: gx,
-          y: gy,
+          x: rx,
+          y: ry,
           translateX: "-50%",
           translateY: "-50%",
         }}
       >
         <motion.div
           animate={{
-            width: cursorType === "project" ? 80 : cursorType === "hover" ? 44 : 36,
-            height: cursorType === "project" ? 80 : cursorType === "hover" ? 44 : 36,
+            width: cursorType === "project" ? 84 : cursorType === "hover" ? 48 : 34,
+            height: cursorType === "project" ? 84 : cursorType === "hover" ? 48 : 34,
             borderColor:
               cursorType === "project"
-                ? "rgba(168,85,247,0.7)"
-                : "rgba(34,211,238,0.5)",
-            opacity: 1,
+                ? "rgba(34,211,238,0.7)"
+                : cursorType === "hover"
+                ? "rgba(56,189,248,0.6)"
+                : "rgba(34,211,238,0.35)",
+            backgroundColor:
+              cursorType === "project"
+                ? "rgba(6,182,212,0.12)"
+                : cursorType === "hover"
+                ? "rgba(34,211,238,0.06)"
+                : "transparent",
+            scale: cursorType === "project" ? 1.05 : 1,
           }}
-          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-full border flex items-center justify-center"
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-full border backdrop-blur-[1px] flex items-center justify-center transition-shadow shadow-[0_0_15px_rgba(6,182,212,0.25)]"
         />
       </motion.div>
 
-      {/* Inner dot — fast */}
+      {/* ─── Center Dot & Contextual Badge ─── */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9999]"
         style={{
@@ -104,20 +116,21 @@ export const CustomCursor: React.FC = () => {
       >
         <motion.div
           animate={{
-            width: cursorType === "project" ? 6 : 7,
-            height: cursorType === "project" ? 6 : 7,
-            backgroundColor:
-              cursorType === "project" ? "#a855f7" : "#22d3ee",
+            width: cursorType === "project" ? 4 : cursorType === "hover" ? 8 : 6,
+            height: cursorType === "project" ? 4 : cursorType === "hover" ? 8 : 6,
+            backgroundColor: cursorType === "project" ? "#38bdf8" : "#22d3ee",
           }}
           transition={{ duration: 0.15 }}
-          className="rounded-full shadow-[0_0_8px_currentColor]"
+          className="rounded-full shadow-[0_0_10px_#22d3ee]"
         />
+
+        {/* Contextual Label for Projects or Interactive Elements */}
         {cursorType === "project" && label && (
           <motion.span
-            initial={{ opacity: 0, scale: 0.7 }}
+            initial={{ opacity: 0, scale: 0.75 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.7 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-bold tracking-widest text-purple-200 uppercase whitespace-nowrap pointer-events-none select-none"
+            exit={{ opacity: 0, scale: 0.75 }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-mono font-bold tracking-[0.2em] text-cyan-300 uppercase whitespace-nowrap pointer-events-none select-none text-glow-subtle"
           >
             {label}
           </motion.span>

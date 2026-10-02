@@ -188,3 +188,43 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* ─── HUD Sci-Fi & Telemetry Utilities ─── */
+.text-glow {
+  text-shadow: 0 0 20px rgba(34, 211, 238, 0.65), 0 0 40px rgba(59, 130, 246, 0.45);
+}
+
+.text-glow-subtle {
+  text-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
+}
+
+.hud-bracket {
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.45));
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(1000%);
+  }
+}
+
+.animate-scanline {
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes radar-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-radar {
+  animation: radar-sweep 12s linear infinite;
+}
+

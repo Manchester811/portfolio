@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { skillCategories } from "@/data/skills";
+import { skillCategories, SkillCategory } from "@/data/skills";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { MotionSection } from "@/components/ui/MotionSection";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Code2, Brain, Database, Server, Wrench } from "lucide-react";
+import { Code2, Brain, Database, Server, Wrench, Terminal, Cpu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type IconFC = React.FC<{ className?: string }>;
@@ -18,106 +18,120 @@ const iconMap: Record<string, IconFC> = {
   Wrench: Wrench as IconFC,
 };
 
-type AccentKey = "cyan" | "purple" | "blue" | "emerald" | "amber";
-
-type AccentStyle = { pill: string; dot: string; tag: string };
-
-const accentMap: Record<AccentKey, AccentStyle> = {
-  cyan:    { pill: "bg-cyan-950/50 border-cyan-500/25 text-cyan-300",      dot: "bg-cyan-400",    tag: "bg-cyan-950/40 text-cyan-400 border-cyan-500/20" },
-  purple:  { pill: "bg-purple-950/50 border-purple-500/25 text-purple-300", dot: "bg-purple-400",  tag: "bg-purple-950/40 text-purple-400 border-purple-500/20" },
-  blue:    { pill: "bg-blue-950/50 border-blue-500/25 text-blue-300",      dot: "bg-blue-400",    tag: "bg-blue-950/40 text-blue-400 border-blue-500/20" },
-  emerald: { pill: "bg-emerald-950/50 border-emerald-500/25 text-emerald-300", dot: "bg-emerald-400", tag: "bg-emerald-950/40 text-emerald-400 border-emerald-500/20" },
-  amber:   { pill: "bg-amber-950/50 border-amber-500/25 text-amber-300",   dot: "bg-amber-400",   tag: "bg-amber-950/40 text-amber-400 border-amber-500/20" },
-};
-
 export const Skills: React.FC = () => {
-  const [active, setActive] = useState(skillCategories[0].id);
+  const [activeId, setActiveId] = useState(skillCategories[0].id);
   const shouldReduceMotion = useReducedMotion();
 
-  const activeCategory = skillCategories.find((c) => c.id === active)!;
-  const accent: AccentStyle = accentMap[activeCategory.accentColor as AccentKey];
-  const ActiveIcon: IconFC = (iconMap[activeCategory.icon] ?? Code2) as IconFC;
+  const activeCategory: SkillCategory =
+    skillCategories.find((c) => c.id === activeId) || skillCategories[0];
+  const ActiveIcon: IconFC = (iconMap[activeCategory.icon] ?? Cpu) as IconFC;
 
   return (
-    <MotionSection id="skills">
-      <SectionHeading
-        title="Skills"
-        subtitle="Technologies and tools I work with across the AI/ML and software engineering stack."
-        accentColor="cyan"
-      />
+    <MotionSection id="skills" className="pt-4">
+      {/* HUD Lead-in */}
+      <div className="mb-2">
+        <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.28em] text-cyan-400 mb-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse-glow" />
+          TECHNICAL ECOSYSTEM // SYSTEM MAP
+        </div>
+        <SectionHeading
+          title="Skills & Capabilities"
+          subtitle="Engineering stack across machine learning frameworks, data architectures, and model deployment."
+          accentColor="cyan"
+        />
+      </div>
 
-      {/* Category tabs */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      {/* System Category Tabs */}
+      <div className="flex flex-wrap gap-2.5 mb-6 font-mono text-xs">
         {skillCategories.map((cat) => {
-          const TabIcon: IconFC = (iconMap[cat.icon] ?? Code2) as IconFC;
-          const a: AccentStyle = accentMap[cat.accentColor as AccentKey];
-          const isActive = active === cat.id;
+          const TabIcon = (iconMap[cat.icon] ?? Terminal) as IconFC;
+          const isActive = activeId === cat.id;
 
           return (
             <button
               key={cat.id}
               type="button"
-              onClick={() => setActive(cat.id)}
+              onClick={() => setActiveId(cat.id)}
               data-cursor-hover
               className={cn(
-                "flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400",
+                "flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all duration-200 cursor-pointer focus:outline-none",
                 isActive
-                  ? cn(a.pill, "shadow-lg")
-                  : "text-slate-400 border-white/8 bg-white/[0.03] hover:bg-white/[0.06] hover:text-slate-200"
+                  ? "bg-cyan-950/70 border-cyan-400/50 text-cyan-200 shadow-[0_0_20px_rgba(6,182,212,0.25)]"
+                  : "border-white/8 bg-[#060b19] text-slate-400 hover:border-white/20 hover:text-white"
               )}
             >
-              <TabIcon className={cn("w-3.5 h-3.5", isActive ? "opacity-100" : "text-slate-500")} />
-              {cat.category.split(" ")[0]}
+              <TabIcon className={cn("w-3.5 h-3.5", isActive ? "text-cyan-400" : "text-slate-500")} />
+              <span>{cat.category.split(" ")[0]}</span>
             </button>
           );
         })}
       </div>
 
-      {/* Active category panel */}
+      {/* Technical System Map Content */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={active}
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
+          key={activeId}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 15 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -8 }}
+          exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -10 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="rounded-2xl border border-white/8 bg-[#080f24]/80 backdrop-blur-sm p-5 sm:p-6"
+          className="rounded-2xl sm:rounded-3xl border border-cyan-500/20 bg-[#060b1b] p-6 sm:p-8 backdrop-blur-md relative overflow-hidden"
         >
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-5 pb-4 border-b border-white/6">
-            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center border", accent.pill)}>
-              <ActiveIcon className="w-4 h-4" />
+          {/* Subtle Corner Brackets */}
+          <div className="absolute top-3 left-3 text-cyan-500/30 pointer-events-none hud-bracket">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M 1 15 L 1 1 L 15 1" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+          </div>
+          <div className="absolute top-3 right-3 text-cyan-500/30 pointer-events-none hud-bracket">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M 1 1 L 15 1 L 15 15" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+          </div>
+
+          {/* Category Banner */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-5 border-b border-white/8">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+                <ActiveIcon className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                  {activeCategory.category}
+                </h3>
+                <p className="text-xs text-slate-400">{activeCategory.description}</p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-sm font-bold text-white">{activeCategory.category}</h3>
-              <p className="text-xs text-slate-500">{activeCategory.description}</p>
+
+            <div className="font-mono text-[10px] text-cyan-400/80 bg-cyan-950/40 px-3 py-1 rounded-md border border-cyan-500/20 self-start sm:self-auto">
+              MODULE // {activeCategory.skills.length} NODES
             </div>
           </div>
 
-          {/* Skills grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Capabilities Node Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {activeCategory.skills.map((skill, i) => (
               <motion.div
                 key={skill.name}
                 initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut", delay: i * 0.05 }}
-                className="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.03] border border-white/6 hover:bg-white/[0.06] hover:border-white/[0.12] transition-colors duration-200 group"
+                transition={{ duration: 0.35, delay: i * 0.04 }}
+                className="flex items-start gap-3.5 p-4 rounded-xl bg-white/[0.02] border border-white/6 hover:border-cyan-500/30 hover:bg-cyan-950/10 transition-all duration-200 group"
               >
-                <span className={cn("mt-0.5 w-1.5 h-1.5 rounded-full shrink-0 opacity-80", accent.dot)} />
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-semibold text-white group-hover:text-cyan-100 transition-colors duration-150">
+                <span className="mt-1 w-2 h-2 rounded-full bg-cyan-400/80 group-hover:bg-cyan-300 group-hover:shadow-[0_0_8px_#22d3ee] transition-all shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="text-sm font-semibold text-white group-hover:text-cyan-200 transition-colors">
                       {skill.name}
                     </span>
                     {skill.tag && (
-                      <span className={cn("px-2 py-0.5 text-[10px] font-medium rounded-md border", accent.tag)}>
+                      <span className="px-2 py-0.5 text-[9px] font-mono uppercase rounded bg-cyan-950/60 border border-cyan-500/25 text-cyan-300">
                         {skill.tag}
                       </span>
                     )}
                   </div>
                   {skill.description && (
-                    <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                    <p className="text-xs text-slate-400 leading-relaxed font-sans">
                       {skill.description}
                     </p>
                   )}

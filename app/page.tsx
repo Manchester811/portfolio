@@ -8,9 +8,9 @@ import { Navbar } from "@/components/layout/Navbar";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { Hero } from "@/components/sections/Hero";
+import { Projects } from "@/components/sections/Projects";
 import { About } from "@/components/sections/About";
 import { Skills } from "@/components/sections/Skills";
-import { Projects } from "@/components/sections/Projects";
 import { Experience } from "@/components/sections/Experience";
 import { Education } from "@/components/sections/Education";
 import { Certifications } from "@/components/sections/Certifications";
@@ -37,19 +37,22 @@ export default function Home() {
         {/* Floating navigation dock */}
         <Navbar />
 
-        {/* Main content */}
+        {/* Main cinematic content */}
         <div className="relative z-10 flex flex-col min-h-screen md:pl-20 lg:pl-24 transition-all duration-300">
-          <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 md:space-y-14">
-            <Hero />
+          {/* Continuous Cinematic Hero Track */}
+          <Hero />
+
+          <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 md:space-y-20 pb-16">
+            <Projects />
             <About />
             <Skills />
-            <Projects />
             <Experience />
             <Education />
             <Certifications />
             <Languages />
             <Contact />
           </main>
+
           <Footer />
         </div>
       </div>
