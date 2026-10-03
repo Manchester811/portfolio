@@ -38,30 +38,30 @@ export const CommandPalette: React.FC = () => {
     (id: string) => {
       setOpen(false);
       const el = document.getElementById(id);
-      if (el) scrollTo(el, { offset: -30, duration: 1.1 });
+      if (el) scrollTo(el, { offset: -30, duration: 1.0 });
     },
     [scrollTo]
   );
 
   const commands: Command[] = [
-    { id: "go-home",        label: "Go Home",           icon: <Home className="w-4 h-4" />,         action: () => navigate("hero"),         group: "Navigate" },
-    { id: "go-projects",    label: "View Projects",     icon: <FolderGit2 className="w-4 h-4" />,   action: () => navigate("projects"),     group: "Navigate" },
-    { id: "go-about",       label: "About Me",          icon: <User className="w-4 h-4" />,         action: () => navigate("about"),        group: "Navigate" },
-    { id: "go-skills",      label: "View Skills",       icon: <Cpu className="w-4 h-4" />,          action: () => navigate("skills"),       group: "Navigate" },
-    { id: "go-experience",  label: "Experience",        icon: <Briefcase className="w-4 h-4" />,    action: () => navigate("experience"),   group: "Navigate" },
-    { id: "go-education",   label: "Education",         icon: <GraduationCap className="w-4 h-4" />,action: () => navigate("education"),    group: "Navigate" },
-    { id: "go-contact",     label: "Contact Me",        icon: <Mail className="w-4 h-4" />,         action: () => navigate("contact"),      group: "Navigate" },
+    { id: "go-home",        label: "Home",              icon: <Home className="w-4 h-4" />,         action: () => navigate("hero"),         group: "Navigation" },
+    { id: "go-projects",    label: "Selected Work",     icon: <FolderGit2 className="w-4 h-4" />,   action: () => navigate("projects"),     group: "Navigation" },
+    { id: "go-skills",      label: "Services & Skills", icon: <Cpu className="w-4 h-4" />,          action: () => navigate("skills"),       group: "Navigation" },
+    { id: "go-about",       label: "About Me",          icon: <User className="w-4 h-4" />,         action: () => navigate("about"),        group: "Navigation" },
+    { id: "go-experience",  label: "Experience",        icon: <Briefcase className="w-4 h-4" />,    action: () => navigate("experience"),   group: "Navigation" },
+    { id: "go-education",   label: "Education",         icon: <GraduationCap className="w-4 h-4" />,action: () => navigate("education"),    group: "Navigation" },
+    { id: "go-contact",     label: "Contact",           icon: <Mail className="w-4 h-4" />,         action: () => navigate("contact"),      group: "Navigation" },
     {
       id: "dl-resume",
       label: "Download Resume",
-      description: "Download Rishabh's CV as PDF",
+      description: "PDF Curriculum Vitae",
       icon: <Download className="w-4 h-4" />,
       action: () => { setOpen(false); const a = document.createElement("a"); a.href = personalData.resumeUrl; a.download = "Rishabh_Jain_Resume.pdf"; a.click(); },
       group: "Actions",
     },
     {
       id: "open-github",
-      label: "Open GitHub",
+      label: "GitHub Profile",
       description: personalData.github,
       icon: <GithubIcon className="w-4 h-4" />,
       action: () => { setOpen(false); window.open(personalData.github, "_blank"); },
@@ -69,7 +69,7 @@ export const CommandPalette: React.FC = () => {
     },
     {
       id: "open-linkedin",
-      label: "Open LinkedIn",
+      label: "LinkedIn Profile",
       description: personalData.linkedin,
       icon: <LinkedinIcon className="w-4 h-4" />,
       action: () => { setOpen(false); window.open(personalData.linkedin, "_blank"); },
@@ -85,10 +85,6 @@ export const CommandPalette: React.FC = () => {
           c.group.toLowerCase().includes(query.toLowerCase())
       )
     : commands;
-
-  useEffect(() => {
-    setSelected(0);
-  }, [query]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -107,6 +103,13 @@ export const CommandPalette: React.FC = () => {
     if (open) setTimeout(() => inputRef.current?.focus(), 50);
   }, [open]);
 
+  // Reset the selection whenever the query changes. Doing this in the event
+  // handler (rather than an effect) avoids the cascading-render warning.
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    setSelected(0);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -119,7 +122,6 @@ export const CommandPalette: React.FC = () => {
     }
   };
 
-  // Group labels
   const groups = [...new Set(filtered.map((c) => c.group))];
 
   return (
@@ -141,24 +143,24 @@ export const CommandPalette: React.FC = () => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -12 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-[20vh] left-1/2 -translate-x-1/2 z-[201] w-[92vw] max-w-lg"
+            className="fixed top-[18vh] left-1/2 -translate-x-1/2 z-[201] w-[92vw] max-w-lg"
             role="dialog"
             aria-modal="true"
             aria-label="Command palette"
             onKeyDown={handleKeyDown}
           >
-            <div className="rounded-2xl overflow-hidden bg-[#080f24]/95 border border-cyan-500/25 shadow-[0_30px_80px_rgba(0,0,0,0.8),0_0_40px_rgba(6,182,212,0.12)] backdrop-blur-2xl">
+            <div className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-default)] shadow-[0_24px_70px_rgba(0,0,0,0.85)] overflow-hidden font-sans">
               {/* Search input */}
-              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/5">
-                <Search className="w-4 h-4 text-slate-400 shrink-0" />
+              <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
+                <Search className="w-4 h-4 text-[var(--text-accent)] shrink-0" />
                 <input
                   ref={inputRef}
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Type a command or search…"
-                  className="flex-1 bg-transparent text-sm text-white placeholder:text-slate-500 outline-none"
+                  onChange={(e) => handleQueryChange(e.target.value)}
+                  placeholder="Type a command or jump to section…"
+                  className="flex-1 bg-transparent text-sm text-[var(--text-primary)] font-medium placeholder:text-[var(--text-muted)] outline-none"
                 />
-                <button onClick={() => setOpen(false)} className="text-slate-500 hover:text-slate-300 transition-colors cursor-pointer">
+                <button onClick={() => setOpen(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -166,41 +168,41 @@ export const CommandPalette: React.FC = () => {
               {/* Commands list */}
               <div className="max-h-[50vh] overflow-y-auto py-2">
                 {filtered.length === 0 && (
-                  <p className="text-center text-slate-500 text-sm py-8">No commands found</p>
+                  <p className="text-center text-[var(--text-muted)] text-xs py-8">No results found</p>
                 )}
                 {groups.map((group) => (
                   <div key={group}>
-                    <p className="px-4 pt-3 pb-1 text-[10px] font-semibold tracking-widest text-slate-600 uppercase">
+                    <p className="px-5 pt-3 pb-1 text-[10px] font-mono font-semibold uppercase tracking-widest text-[var(--text-accent)]">
                       {group}
                     </p>
                     {filtered
                       .filter((c) => c.group === group)
                       .map((cmd) => {
-                        const idx = filtered.indexOf(cmd);
+                        const idx = filtered.findIndex((c) => c.id === cmd.id);
                         return (
                           <button
                             key={cmd.id}
                             onClick={cmd.action}
                             onMouseEnter={() => setSelected(idx)}
-                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors duration-100 cursor-pointer ${
+                            className={`w-full flex items-center gap-3 px-5 py-3 text-left transition-colors cursor-pointer ${
                               selected === idx
-                                ? "bg-cyan-500/12 text-cyan-200"
-                                : "text-slate-300 hover:bg-white/5"
+                                ? "bg-[var(--accent-primary-muted)] text-[var(--text-accent)] border-l-2 border-[var(--accent-primary)]"
+                                : "text-[var(--text-secondary)] hover:bg-white/[0.03] border-l-2 border-transparent"
                             }`}
                           >
-                            <span className={`shrink-0 ${selected === idx ? "text-cyan-400" : "text-slate-500"}`}>
+                            <span className="shrink-0">
                               {cmd.icon}
                             </span>
                             <span className="flex-1">
-                              <span className="text-sm font-medium">{cmd.label}</span>
+                              <span className="text-xs font-semibold uppercase tracking-wide">{cmd.label}</span>
                               {cmd.description && (
-                                <span className="block text-xs text-slate-500 truncate">{cmd.description}</span>
+                                <span className={`block text-[10px] ${selected === idx ? "text-[var(--text-accent)]/70" : "text-[var(--text-muted)]"}`}>
+                                  {cmd.description}
+                                </span>
                               )}
                             </span>
                             {selected === idx && (
-                              <kbd className="shrink-0 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-white/8 rounded border border-white/10">
-                                ↵
-                              </kbd>
+                              <span className="text-[10px] font-mono text-[var(--text-accent)]">↵</span>
                             )}
                           </button>
                         );
@@ -210,9 +212,9 @@ export const CommandPalette: React.FC = () => {
               </div>
 
               {/* Footer hint */}
-              <div className="flex items-center justify-between px-4 py-2.5 border-t border-white/5 text-[10px] text-slate-600">
+              <div className="flex items-center justify-between px-5 py-2.5 border-t border-white/[0.05] text-[10px] font-mono text-[var(--text-muted)] bg-[var(--bg-primary)]/40">
                 <span>↑↓ navigate · ↵ select · esc close</span>
-                <span className="font-mono">⌘K</span>
+                <span>⌘K</span>
               </div>
             </div>
           </motion.div>

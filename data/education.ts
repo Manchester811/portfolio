@@ -6,31 +6,28 @@ export interface EducationItem {
   period: string;
   score: string;
   scoreLabel: string;
-  highlights: string[];
   coursework: string[];
+  priorEducation?: { label: string; value: string }[];
 }
 
 export const educationData: EducationItem[] = [
   {
-    degree: "Bachelor of Technology",
+    degree: "B.Tech",
     field: "Computer Science and Engineering (Data Science)",
-    institution: "Vellore Institute of Technology (VIT)",
-    location: "Vellore, Tamil Nadu, India",
-    period: "2023 - 2027",
+    institution: "Vellore Institute of Technology",
+    location: "Vellore, Tamil Nadu",
+    period: "Aug 2023 — May 2027",
     score: "8.13",
-    scoreLabel: "Current CGPA",
-    highlights: [
-      "Specializing in Data Science, Machine Learning algorithms, and Statistical Computing",
-      "Active contributor in student tech teams and AI/ML project hackathons",
-      "Hands-on research in neural network architectures and operational technology security"
-    ],
+    scoreLabel: "CGPA / 10",
     coursework: [
+      "Foundations of Data Science",
       "Data Structures & Algorithms",
-      "Machine Learning & Pattern Recognition",
       "Database Management Systems",
-      "Probability & Applied Statistics",
-      "Deep Learning Foundations",
-      "Object Oriented Programming (Java/Python)"
-    ]
-  }
+      "Machine Learning",
+    ],
+    priorEducation: [
+      { label: "Class XII", value: "74.4%" },
+      { label: "Class X", value: "92.4%" },
+    ],
+  },
 ];

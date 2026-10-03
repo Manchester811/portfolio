@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { ProjectItem } from "@/data/projects";
 import { Badge } from "@/components/ui/Badge";
-import { X, ExternalLink, Cpu, CheckCircle2, ShieldCheck, ArrowRight } from "lucide-react";
+import { X, ExternalLink, Cpu, CheckCircle2 } from "lucide-react";
 import { GithubIcon } from "@/components/ui/Icons";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
@@ -15,19 +15,27 @@ interface ProjectDossierProps {
 
 export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose }) => {
   const shouldReduceMotion = useReducedMotion();
+  const isOpenRef = useRef(false);
 
   useEffect(() => {
+    if (project) {
+      isOpenRef.current = true;
+      document.body.style.overflow = "hidden";
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
 
     if (project) {
-      document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
     }
 
     return () => {
-      document.body.style.overflow = "unset";
+      if (isOpenRef.current) {
+        document.body.style.overflow = "unset";
+        isOpenRef.current = false;
+      }
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [project, onClose]);
@@ -35,184 +43,226 @@ export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose
   return (
     <AnimatePresence>
       {project && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-          {/* Backdrop with dark blur */}
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-3 sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${project.title} case study`}
+        >
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
             onClick={onClose}
-            className="fixed inset-0 bg-[#02050e]/88 backdrop-blur-md"
+            className="fixed inset-0 bg-[rgba(5,5,5,0.88)] backdrop-blur-md"
           />
 
-          {/* Dossier Modal Card */}
+          {/* Modal */}
           <motion.div
             initial={{
               opacity: 0,
-              scale: shouldReduceMotion ? 1 : 0.94,
-              y: shouldReduceMotion ? 0 : 25,
+              scale: shouldReduceMotion ? 1 : 0.96,
+              y: shouldReduceMotion ? 0 : 24,
             }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              y: 0,
-            }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{
               opacity: 0,
-              scale: shouldReduceMotion ? 1 : 0.95,
-              y: shouldReduceMotion ? 0 : 15,
+              scale: shouldReduceMotion ? 1 : 0.97,
+              y: shouldReduceMotion ? 0 : 12,
             }}
-            transition={{
-              type: "spring",
-              damping: 30,
-              stiffness: 340,
-            }}
-            className="relative w-full max-w-4xl rounded-2xl sm:rounded-3xl bg-[#070e22] border border-cyan-500/35 shadow-[0_0_60px_rgba(6,182,212,0.22)] overflow-hidden z-10 my-8 font-sans"
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            className="relative z-10 my-8 w-full max-w-4xl overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--bg-card)] shadow-[0_24px_80px_rgba(0,0,0,0.85)]"
           >
-            {/* Top HUD Telemetry Ribbon */}
-            <div className="flex items-center justify-between px-6 py-3 border-b border-white/8 bg-[#040816] font-mono text-[10px] uppercase tracking-[0.25em] text-slate-400">
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse-glow" />
-                <span className="text-cyan-400 font-bold">PROJECT DOSSIER // {project.id.toUpperCase()}</span>
+            {/* Ribbon */}
+            <div className="flex items-center justify-between gap-4 border-b border-[var(--border-subtle)] bg-[var(--bg-primary)] px-6 py-3.5 font-mono text-[var(--text-micro)] uppercase tracking-[0.2em]">
+              <div className="flex items-center gap-2.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
+                <span className="font-semibold text-[var(--text-accent)]">
+                  Case Study // {project.id.toUpperCase()}
+                </span>
               </div>
-              <span className="text-slate-400">{project.status}</span>
+              <span className="shrink-0 font-semibold text-[var(--text-muted)]">
+                {project.status ?? project.category}
+              </span>
             </div>
 
-            {/* Close Button */}
+            {/* Close */}
             <motion.button
               onClick={onClose}
               whileHover={{ rotate: 90, scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              aria-label="Close dossier"
-              className="absolute top-11 right-4 z-20 p-2.5 rounded-full bg-[#050b1d]/85 text-slate-300 hover:text-white hover:bg-cyan-500/20 border border-cyan-500/30 transition-colors cursor-pointer"
+              aria-label="Close case study"
+              className="absolute right-4 top-12 z-20 cursor-pointer rounded-full border border-[var(--border-default)] bg-[var(--bg-primary)]/90 p-2.5 text-[var(--text-secondary)] transition-colors duration-300 hover:border-[var(--border-accent)] hover:text-[var(--text-accent)]"
             >
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             </motion.button>
 
-            {/* Dossier Hero Visual Header */}
-            <div className="relative w-full h-56 sm:h-72 overflow-hidden bg-[#050814]">
-              <Image
-                src={project.image}
-                alt={project.title}
-                fill
-                priority
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#070e22] via-[#070e22]/50 to-transparent" />
+            {/* Visual header */}
+            <div className="relative h-56 w-full overflow-hidden bg-[var(--bg-primary)] sm:h-72">
+              {project.image ? (
+                <Image
+                  src={project.image}
+                  alt={`${project.title} — ${project.subtitle}`}
+                  fill
+                  sizes="(max-width: 896px) 96vw, 896px"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[linear-gradient(135deg,var(--bg-card)_0%,var(--bg-primary)_100%)]">
+                  <span className="font-mono text-[var(--text-micro)] uppercase tracking-[0.3em] text-[var(--text-dim)]">
+                    No Preview
+                  </span>
+                  <span className="font-display text-3xl font-bold uppercase tracking-[-0.03em] text-[var(--text-secondary)]">
+                    {project.title}
+                  </span>
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-card)] via-[var(--bg-card)]/40 to-transparent" />
 
-              {/* In-situ Dossier Badges */}
-              <div className="absolute bottom-5 left-6 right-6 flex items-center justify-between">
-                <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-cyan-950/70 text-cyan-300 border border-cyan-500/40 backdrop-blur-md">
-                  {project.category}
-                </span>
-                <span className="text-xs font-mono text-cyan-400 bg-black/60 px-3 py-1 rounded-md border border-cyan-500/25">
-                  {project.badge}
-                </span>
+              <div className="absolute bottom-5 left-6 right-6 flex flex-wrap items-center justify-between gap-3">
+                <span className="chip-accent backdrop-blur-md">{project.category}</span>
+                <span className="chip backdrop-blur-md">{project.badge}</span>
               </div>
             </div>
 
-            {/* Dossier Body Content */}
-            <div className="p-6 sm:p-8 space-y-6 max-h-[60vh] overflow-y-auto">
+            {/* Body */}
+            <div className="max-h-[62vh] space-y-8 overflow-y-auto p-6 sm:p-8">
               <div>
-                <h3 className="text-2xl sm:text-3xl font-black text-white mb-1">
+                <h3 className="font-display text-[clamp(1.5rem,3vw,2.25rem)] font-bold uppercase leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)]">
                   {project.title}
                 </h3>
-                <p className="text-sm font-medium text-cyan-400 font-mono">
+                <p className="mt-3 font-mono text-sm text-[var(--text-accent)]">
                   {project.subtitle}
                 </p>
               </div>
 
-              {/* OVERVIEW & SOLUTION */}
-              <div className="space-y-3 text-sm text-slate-300 leading-relaxed">
-                <span className="font-mono text-[10px] text-cyan-400 uppercase tracking-widest block">
-                  SYSTEM OVERVIEW & PROBLEM
-                </span>
+              {/* Overview */}
+              <div className="space-y-3">
+                <span className="label-muted block">System Overview &amp; Problem</span>
                 {project.longDescription.map((desc, idx) => (
-                  <p key={idx}>{desc}</p>
+                  <p
+                    key={idx}
+                    className="text-sm leading-relaxed text-[var(--text-secondary)]"
+                  >
+                    {desc}
+                  </p>
                 ))}
               </div>
 
-              {/* ARCHITECTURE & METRICS (REAL DATA) */}
-              <div className="p-4 rounded-2xl bg-[#040816] border border-cyan-500/20 font-mono text-xs space-y-3">
-                <div className="flex items-center gap-2 text-cyan-400 font-bold uppercase tracking-wider text-[11px]">
-                  <Cpu className="w-4 h-4" />
-                  <span>ARCHITECTURE & SYSTEM SPECS</span>
+              {/* Architecture */}
+              <div className="space-y-4 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
+                <div className="flex items-center gap-2 font-mono text-[var(--text-micro)] font-semibold uppercase tracking-[0.2em] text-[var(--text-accent)]">
+                  <Cpu className="h-4 w-4" />
+                  <span>Architecture &amp; System Specs</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/6">
-                    <span className="text-slate-400 block text-[10px] mb-1">MODEL / CORE ENGINE</span>
-                    <span className="text-white font-medium">{project.architectureDetails.modelType}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/6">
-                    <span className="text-slate-400 block text-[10px] mb-1">INPUT / DATASET</span>
-                    <span className="text-white font-medium">{project.architectureDetails.datasetOrInput}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/6">
-                    <span className="text-slate-400 block text-[10px] mb-1">BENCHMARK METRICS</span>
-                    <span className="text-cyan-300 font-medium">{project.architectureDetails.metrics}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/6">
-                    <span className="text-slate-400 block text-[10px] mb-1">BACKEND PIPELINE</span>
-                    <span className="text-white font-medium">{project.architectureDetails.backendStack}</span>
-                  </div>
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {[
+                    {
+                      label: "Model / Core Engine",
+                      value: project.architectureDetails.modelType,
+                      accent: false,
+                    },
+                    {
+                      label: "Input / Dataset",
+                      value: project.architectureDetails.datasetOrInput,
+                      accent: false,
+                    },
+                    {
+                      label: "Benchmark Metrics",
+                      value: project.architectureDetails.metrics,
+                      accent: true,
+                    },
+                    {
+                      label: "Backend Pipeline",
+                      value: project.architectureDetails.backendStack,
+                      accent: false,
+                    },
+                  ].map((spec) => (
+                    <div
+                      key={spec.label}
+                      className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-4"
+                    >
+                      <span className="mb-1.5 block font-mono text-[var(--text-micro)] uppercase tracking-[0.15em] text-[var(--text-muted)]">
+                        {spec.label}
+                      </span>
+                      <span
+                        className={`text-sm font-semibold ${
+                          spec.accent
+                            ? "text-[var(--text-accent)]"
+                            : "text-[var(--text-primary)]"
+                        }`}
+                      >
+                        {spec.value}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* KEY TECHNICAL INNOVATIONS */}
-              <div className="p-4 rounded-2xl bg-[#09132b]/50 border border-white/8">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2 font-mono">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+              {/* Highlights */}
+              <div>
+                <h4 className="mb-4 flex items-center gap-2 font-mono text-[var(--text-micro)] font-semibold uppercase tracking-[0.2em] text-[var(--text-accent)]">
+                  <CheckCircle2 className="h-4 w-4" />
                   Key Technical Innovations
                 </h4>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {project.keyHighlights.map((hl, idx) => (
-                    <li key={idx} className="text-xs text-slate-300 flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-1.5 shrink-0" />
+                    <li
+                      key={idx}
+                      className="flex items-start gap-3 text-sm leading-relaxed text-[var(--text-secondary)]"
+                    >
+                      <span className="mt-2 h-px w-3 shrink-0 bg-[var(--accent-primary)]" />
                       <span>{hl}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* TECHNOLOGIES USED */}
+              {/* Stack */}
               <div>
-                <span className="text-xs font-mono uppercase tracking-wider text-slate-400 block mb-2">
-                  TECHNOLOGY STACK
+                <span className="mb-3 block font-mono text-[var(--text-micro)] uppercase tracking-[0.2em] text-[var(--text-muted)]">
+                  Technology Stack
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {project.technologies.map((tech, idx) => (
-                    <Badge key={idx} variant="cyan" size="sm">
+                  {project.technologies.map((tech) => (
+                    <Badge key={tech} variant="cyan" size="sm">
                       {tech}
                     </Badge>
                   ))}
                 </div>
               </div>
 
-              {/* ACTION LINKS */}
-              <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10 font-mono text-xs">
+              {/* Links */}
+              <div className="flex flex-wrap items-center gap-3 border-t border-[var(--border-subtle)] pt-6">
                 {project.liveDemoUrl && (
                   <a
                     href={project.liveDemoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold shadow-[0_0_20px_rgba(6,182,212,0.35)] hover:shadow-[0_0_30px_rgba(6,182,212,0.6)] transition-all cursor-pointer"
+                    className="btn-primary px-6 py-3 text-[var(--text-micro)]"
+                    data-cursor-hover
                   >
-                    <span>LIVE DEMO</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Live Demo</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 )}
 
-                <a
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/10 hover:border-cyan-500/40 transition-colors cursor-pointer"
-                >
-                  <GithubIcon className="w-4 h-4" />
-                  <span>SOURCE REPOSITORY</span>
-                </a>
+                {project.githubUrl && (
+                  <a
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary px-6 py-3 text-[var(--text-micro)]"
+                    data-cursor-hover
+                  >
+                    <GithubIcon className="h-4 w-4" />
+                    <span>Source Repository</span>
+                  </a>
+                )}
               </div>
             </div>
           </motion.div>

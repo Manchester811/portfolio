@@ -1,39 +1,46 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, Manrope, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
+  weight: ["500", "600", "700"],
+});
+
+const manrope = Manrope({
+  variable: "--font-sans",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-mono",
   subsets: ["latin"],
   display: "swap",
 });
 
 export const viewport: Viewport = {
-  themeColor: "#050814",
+  themeColor: "#050505",
   width: "device-width",
   initialScale: 1,
 };
 
 export const metadata: Metadata = {
-  title: "Rishabh Jain — Data Science Engineer | AI/ML Developer",
+  title: "Rishabh Jain — Computer Science Engineer · Data Science",
   description:
-    "Portfolio of Rishabh Jain — B.Tech CSE (Data Science) at VIT Vellore. AI/ML engineering, deep learning, NLP pipelines, and production-grade intelligent systems.",
+    "Portfolio of Rishabh Jain — B.Tech CSE (Data Science) at VIT Vellore. Building and deploying AI applications, developer tools, and data-driven systems.",
   keywords: [
     "Rishabh Jain",
-    "Data Science Engineer",
-    "AI Developer",
+    "Computer Science",
+    "Data Science",
     "Machine Learning",
-    "Deep Learning",
+    "Generative AI",
     "VIT Vellore",
-    "NLP",
-    "TensorFlow",
-    "ResumeIQ",
+    "PCPilot",
+    "EvalAI",
     "Next.js Portfolio",
   ],
   authors: [{ name: "Rishabh Jain" }],
@@ -43,17 +50,16 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://portfolio-jd2s.vercel.app",
-    title: "Rishabh Jain — Data Science Engineer | AI/ML Developer",
+    title: "Rishabh Jain — Computer Science Engineer · Data Science",
     description:
-      "Futuristic portfolio of Rishabh Jain — machine learning systems, deep learning models, and practical AI applications.",
+      "B.Tech CSE (Data Science) portfolio of Rishabh Jain — AI applications, developer tools, and data-driven systems.",
     siteName: "Rishabh Jain Portfolio",
-    // Add real OG image: images: [{ url: "/og-image.png", width: 1200, height: 630 }]
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rishabh Jain — Data Science Engineer | AI/ML Developer",
+    title: "Rishabh Jain — Computer Science Engineer · Data Science",
     description:
-      "Futuristic portfolio of Rishabh Jain — ML systems, deep learning, and practical AI.",
+      "B.Tech CSE (Data Science) portfolio of Rishabh Jain — AI applications, developer tools, and data systems.",
   },
   icons: { icon: "/favicon.ico" },
 };
@@ -62,11 +68,16 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
+    /*
+     * No `scroll-smooth` here: Lenis already owns scroll easing, and a CSS
+     * scroll-behavior on the document makes the two compete for the same
+     * gesture. It also fights browser/OS reduced-motion preferences.
+     */
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} scroll-smooth`}
+      className={`${spaceGrotesk.variable} ${manrope.variable} ${geistMono.variable}`}
     >
-      <body className="min-h-screen bg-[#050814] text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-white">
+      <body className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased selection:bg-[var(--accent-primary-muted)] selection:text-[var(--text-primary)]">
         {children}
       </body>
     </html>

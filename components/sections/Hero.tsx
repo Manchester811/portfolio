@@ -1,348 +1,293 @@
 "use client";
 
-import React, { useRef, useState, useEffect, Suspense } from "react";
-import dynamic from "next/dynamic";
+import React from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import { personalData } from "@/data/personal";
-import { HeroHUD } from "@/components/ui/HeroHUD";
-import { ResumeButton } from "@/components/ui/ResumeButton";
-import { MagneticElement } from "@/components/motion/MagneticElement";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, Download, Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-  AnimatePresence,
-} from "framer-motion";
+import { motion, useReducedMotion, useTransform } from "framer-motion";
+import { useFrameSequence } from "@/components/scroll/useFrameSequence";
 
-const HeroCanvas = dynamic(
-  () => import("@/components/three/HeroCanvas").then((m) => ({ default: m.HeroCanvas })),
-  { ssr: false }
-);
+const ease = [0.16, 1, 0.3, 1] as const;
+
+/**
+ * Total scroll track, in viewport heights.
+ * The sticky viewport occupies one of these, so the sequence gets
+ * SCROLL_LENGTH_VH - 1 viewport-heights of pinned playback (240 frames mapped
+ * across that range) and the remaining viewport-height is the sticky exit,
+ * during which the final frame slides away as the next section arrives.
+ * 180 keeps the full 240-frame sequence intact while cutting ~40vh of dead
+ * scroll versus 220. The pinned range is 179vh (0.75vh/frame), exit is 1vh.
+ */
+const SCROLL_LENGTH_VH = 180;
+
+/**
+ * Stats band is part of the hero composition, so it fades in early and
+ * stays visible for the whole pinned range. A subtle exit fade keeps the
+ * handoff to Projects clean.
+ */
+const STATS_FADE_START = 0.0;
+const STATS_FADE_END = 0.12;
+
+/**
+ * Hero text fade ranges - synchronized with the same scroll progress
+ * 0-0.3: Full visibility
+ * 0.3-0.7: Subtle fade/move
+ * 0.7-1.0: Fade out for handoff
+ */
+const HERO_TEXT_FADE_START = 0.3;
+const HERO_TEXT_FADE_END = 0.7;
+const HERO_TEXT_EXIT_START = 0.7;
+const HERO_TEXT_EXIT_END = 1.0;
 
 export const Hero: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
-  const [progressNum, setProgressNum] = useState(0);
-  const [currentPhase, setCurrentPhase] = useState("PHASE 01 — INITIALIZATION");
+  const sectionRef = useRef<HTMLElement>(null);
 
-  // Scroll tracking across the 350vh track
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
+  const { canvasRef, wrapRef, progress } = useFrameSequence({
+    targetRef: sectionRef,
+    /**
+     * "end end" — not "end start".
+     * The sticky viewport stays pinned until the track's bottom edge meets the
+     * viewport's bottom edge, which is heroHeight - viewportHeight into the
+     * scroll. With "end start" the sequence instead completed at heroHeight,
+     * i.e. after the hero had already scrolled away, so the last third of the
+     * frames played off-screen and the pinned stretch looked frozen.
+     */
     offset: ["start start", "end end"],
   });
 
-  useEffect(() => {
-    return scrollYProgress.on("change", (latest) => {
-      const p = Math.round(latest * 100);
-      setProgressNum(p);
+  /**
+   * Hero text synchronized with scroll progress:
+   * 0-30%: Full visibility
+   * 30-70%: Subtle fade + slight upward movement
+   * 70-100%: Fade out for handoff to stats
+   */
+  const heroContentOpacity = useTransform(
+    progress,
+    [HERO_TEXT_FADE_START, HERO_TEXT_FADE_END, HERO_TEXT_EXIT_START, HERO_TEXT_EXIT_END],
+    [1, 1, 0.5, 0]
+  );
+  const heroContentY = useTransform(
+    progress,
+    [HERO_TEXT_FADE_START, HERO_TEXT_FADE_END, HERO_TEXT_EXIT_START, HERO_TEXT_EXIT_END],
+    [0, -8, -24, -40]
+  );
 
-      if (latest < 0.2) {
-        setCurrentPhase("PHASE 01 — INITIALIZATION");
-      } else if (latest < 0.45) {
-        setCurrentPhase("PHASE 02 — SYSTEM ANALYSIS");
-      } else if (latest < 0.7) {
-        setCurrentPhase("PHASE 03 — INTELLIGENCE");
-      } else if (latest < 0.9) {
-        setCurrentPhase("PHASE 04 — TRANSITION");
-      } else {
-        setCurrentPhase("PHASE 05 — HANDOFF");
-      }
-    });
-  }, [scrollYProgress]);
-
-  /* ─── Scroll-driven Transforms ─── */
-  // Phase 1: Name and initial title
-  const phase1Opacity = useTransform(scrollYProgress, [0, 0.18, 0.25], [1, 1, 0]);
-  const phase1Y = useTransform(scrollYProgress, [0, 0.22], [0, -35]);
-
-  // Phase 2: Technical analysis callout
-  const phase2Opacity = useTransform(scrollYProgress, [0.22, 0.28, 0.42, 0.47], [0, 1, 1, 0]);
-  const phase2Y = useTransform(scrollYProgress, [0.22, 0.35, 0.47], [30, 0, -25]);
-
-  // Phase 3: Building Intelligent Systems highlight
-  const phase3Opacity = useTransform(scrollYProgress, [0.46, 0.52, 0.68, 0.73], [0, 1, 1, 0]);
-  const phase3Scale = useTransform(scrollYProgress, [0.46, 0.6, 0.73], [0.94, 1, 1.05]);
-
-  // Phase 4 & 5: Transition toward Featured Projects
-  const heroExitOpacity = useTransform(scrollYProgress, [0.82, 0.98], [1, 0]);
-  const heroExitScale = useTransform(scrollYProgress, [0.82, 0.98], [1, 0.92]);
-
-  // Portrait scale and spatial positioning across scroll
-  const portraitScale = useTransform(scrollYProgress, [0, 0.35, 0.65, 0.95], [1, 1.08, 1.15, 1.25]);
-  const portraitY = useTransform(scrollYProgress, [0, 0.35, 0.7, 0.95], [0, -15, -30, -50]);
-  const portraitOpacity = useTransform(scrollYProgress, [0, 0.85, 0.98], [1, 1, 0]);
+  /**
+   * Stats band opacity: visible for the whole pinned range, fading in over
+   * the first 12% and out over the last 15% for a clean handoff.
+   */
+  const statsOpacity = useTransform(
+    progress,
+    [STATS_FADE_START, STATS_FADE_END, 0.85, 1.0],
+    [0, 1, 1, 0.4]
+  );
+  const statsY = useTransform(progress, [STATS_FADE_START, STATS_FADE_END, 0.85, 1.0], [24, 0, 0, -16]);
 
   return (
-    <div
-      ref={containerRef}
+    <section
       id="hero"
-      className="relative w-full h-[320vh] md:h-[350vh] bg-[#050814]"
+      ref={sectionRef}
+      className="relative w-full bg-[var(--bg-primary)]"
+      style={{
+        height: shouldReduceMotion ? "100dvh" : `${SCROLL_LENGTH_VH}vh`,
+      }}
     >
-      {/* ─── Pinned Sticky Viewport ─── */}
-      <motion.div
-        style={{
-          opacity: shouldReduceMotion ? 1 : heroExitOpacity,
-          scale: shouldReduceMotion ? 1 : heroExitScale,
-        }}
-        className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center items-center"
-      >
-        {/* 3D WebGL Background Canvas */}
-        {!shouldReduceMotion && (
-          <Suspense fallback={null}>
-            <HeroCanvas progress={progressNum / 100} />
-          </Suspense>
-        )}
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
+        {/* =====================================================
+            SEQUENCE — full-bleed, centred, scrubbed by scroll.
+            The frames cover the whole pinned viewport edge to edge, so the
+            hero reads as one continuous shot. Scrolling forward walks the
+            head turn forward and hands off to the next section as the hero
+            unpins; scrolling back reverses it exactly.
+        ===================================================== */}
 
-        {/* Ambient atmospheric vignettes */}
-        <div className="pointer-events-none absolute inset-0 z-10">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050814]/90 via-transparent to-[#050814]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-950/20 via-transparent to-[#050814]/80" />
-          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-cyan-500/10 blur-[130px] rounded-full pointer-events-none" />
+        <div className="absolute inset-0 z-0" aria-hidden="true">
+          <div ref={wrapRef} className="absolute inset-0">
+            {/*
+              Centred with translate rather than `inset-0 m-auto`: auto margins
+              only centre an over-constrained box while free space is positive.
+              A cover-fitted canvas is wider than the viewport on portrait
+              screens, and per spec that negative free space pins margin-left to
+              0, which left-aligns it instead.
+            */}
+            <div className="absolute inset-0">
+              {/* Static frame 0 as loading placeholder — cross-fades to canvas */}
+              <Image
+                src="/frames/frame_000000.png"
+                alt=""
+                aria-hidden="true"
+                fill
+                sizes="100vw"
+                className="object-cover opacity-100 transition-opacity duration-700"
+                style={{
+                  objectPosition: "56% 26%",
+                }}
+              />
+              <motion.div
+                className="absolute left-1/2 top-1/2 block -translate-x-1/2 -translate-y-1/2"
+              >
+                <motion.canvas
+                  ref={canvasRef}
+                  aria-hidden="true"
+                  className="block"
+                />
+              </motion.div>
+            </div>
+          </div>
         </div>
 
-        {/* Technical HUD Overlay Graphics */}
-        <HeroHUD progressNumber={progressNum} phase={currentPhase} />
+        {/* =====================================================
+            LEGIBILITY — keeps the left column readable over any frame
+            without crushing the subject.
 
-        {/* Main Viewport Content Container */}
-        <div className="relative z-20 w-full max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-10 md:gap-14">
+            The scrim is deliberately light so the portrait (face, hair,
+            glasses, silhouette) stays one of the strongest elements on the
+            page; only a soft gradient on the left supports the copy.
+        ===================================================== */}
 
-          {/* ─── LEFT: Dynamic Scroll Typographic Stages ─── */}
-          <div className="flex-1 w-full text-center md:text-left relative min-h-[300px] md:min-h-[360px] flex items-center">
+        <div className="pointer-events-none absolute inset-0 z-[1]">
+          {/* Soft left gradient to support the identity column */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-primary)]/55 via-[var(--bg-primary)]/10 to-transparent" />
+          {/* Gentle bottom fade into the stats band */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)]/35 via-transparent to-transparent" />
+          {/* Cinematic vignette — very light, preserves the subject */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_70%,rgba(3,3,3,0.55)_100%)]" />
+        </div>
 
-            {/* STAGE 1: Identity & Roles (0% - 25%) */}
-            <motion.div
-              style={{
-                opacity: shouldReduceMotion ? 1 : phase1Opacity,
-                y: shouldReduceMotion ? 0 : phase1Y,
-                pointerEvents: progressNum < 25 ? "auto" : "none",
-              }}
-              className="absolute inset-0 flex flex-col justify-center items-center md:items-start"
-            >
-              {/* Status pill */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 mb-5 rounded-full text-xs font-mono font-medium bg-cyan-950/60 text-cyan-300 border border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.15)] backdrop-blur-md">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse-glow" />
-                {personalData.status}
-              </div>
+        {/* =====================================================
+            IDENTITY + RESUME — left column, clear of the subject
+        ===================================================== */}
 
-              {/* Name */}
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white mb-2 leading-[0.95]">
-                {personalData.name.split(" ")[0]}{" "}
-                <span className="bg-gradient-to-r from-cyan-300 via-sky-300 to-blue-400 bg-clip-text text-transparent">
-                  {personalData.name.split(" ")[1]}
-                </span>
-              </h1>
-
-              {/* Sub-identity */}
-              <p className="text-base sm:text-lg font-mono text-cyan-400 tracking-wider mb-4 uppercase">
-                {personalData.role}
-              </p>
-
-              {/* Brief mission statement */}
-              <p className="text-sm sm:text-base text-slate-400 max-w-lg leading-relaxed mb-6">
-                {personalData.tagline}
-              </p>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 justify-center md:justify-start">
-                <MagneticElement strength={0.3}>
-                  <a
-                    href="#projects"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:shadow-[0_0_35px_rgba(6,182,212,0.65)] hover:scale-[1.02] active:scale-95 transition-all duration-300 cursor-pointer"
-                    data-cursor-hover
-                  >
-                    Inspect Projects <ArrowRight className="w-4 h-4" />
-                  </a>
-                </MagneticElement>
-
-                <ResumeButton url={personalData.resumeUrl} variant="ghost" />
-
-                {/* Social icons */}
-                <div className="flex items-center gap-2 ml-1">
-                  <a
-                    href={personalData.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="GitHub"
-                    className="p-2.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-cyan-300 transition-colors"
-                    data-cursor-hover
-                  >
-                    <GithubIcon className="w-4 h-4" />
-                  </a>
-                  <a
-                    href={personalData.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="LinkedIn"
-                    className="p-2.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] text-slate-300 hover:text-cyan-300 transition-colors"
-                    data-cursor-hover
-                  >
-                    <LinkedinIcon className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* STAGE 2: System Analysis (22% - 47%) */}
-            <motion.div
-              style={{
-                opacity: shouldReduceMotion ? 0 : phase2Opacity,
-                y: shouldReduceMotion ? 0 : phase2Y,
-                pointerEvents: progressNum >= 22 && progressNum < 48 ? "auto" : "none",
-              }}
-              className="absolute inset-0 flex flex-col justify-center items-center md:items-start"
-            >
-              <div className="inline-flex items-center gap-2 font-mono text-[11px] text-cyan-400 uppercase tracking-[0.25em] mb-3">
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse-glow" />
-                NEURAL ARCHITECTURE DIAGNOSTIC
-              </div>
-
-              <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-[1.05] mb-4">
-                High-Throughput <br />
-                <span className="bg-gradient-to-r from-cyan-300 via-sky-300 to-blue-400 bg-clip-text text-transparent">
-                  Machine Intelligence.
-                </span>
-              </h2>
-
-              <p className="text-sm sm:text-base text-slate-300 max-w-md leading-relaxed font-sans mb-6">
-                Specializing in production deep learning models, natural language understanding pipelines, and end-to-end data systems.
-              </p>
-
-              {/* Live Metric Cards */}
-              <div className="grid grid-cols-2 gap-3 w-full max-w-sm font-mono">
-                <div className="p-3 rounded-xl bg-[#09142b]/70 border border-cyan-500/20">
-                  <span className="text-[10px] text-slate-500 block uppercase tracking-wider">Focus</span>
-                  <span className="text-xs font-semibold text-cyan-300">Deep Learning & NLP</span>
-                </div>
-                <div className="p-3 rounded-xl bg-[#09142b]/70 border border-cyan-500/20">
-                  <span className="text-[10px] text-slate-500 block uppercase tracking-wider">Institution</span>
-                  <span className="text-xs font-semibold text-slate-200">VIT Vellore</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* STAGE 3: Intelligence & Purpose (46% - 73%) */}
-            <motion.div
-              style={{
-                opacity: shouldReduceMotion ? 0 : phase3Opacity,
-                scale: shouldReduceMotion ? 1 : phase3Scale,
-                pointerEvents: progressNum >= 46 && progressNum < 74 ? "auto" : "none",
-              }}
-              className="absolute inset-0 flex flex-col justify-center items-center md:items-start"
-            >
-              <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.3em] text-cyan-400 mb-3">
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse-glow" />
-                SYSTEM PHILOSOPHY
-              </div>
-
-              <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-[0.98] mb-4">
-                Building <br />
-                <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-purple-400 bg-clip-text text-transparent">
-                  Intelligent Systems.
-                </span>
-              </h2>
-
-              <p className="text-sm sm:text-base text-slate-300 max-w-md leading-relaxed mb-6 font-sans">
-                Bridging mathematical foundations with scalable software engineering to turn raw data into deployed impact.
-              </p>
-
-              <div className="flex items-center gap-3">
-                <a
-                  href="#projects"
-                  className="px-5 py-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-mono uppercase tracking-wider hover:bg-cyan-500/20 transition-colors"
-                  data-cursor-hover
-                >
-                  Enter Project Registry ↓
-                </a>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* ─── RIGHT: Visual Anchor (Portrait & HUD Rings) ─── */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-30 flex w-full max-w-[var(--container-max)] items-center px-6 py-28 sm:px-8 lg:px-12">
           <motion.div
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease }}
             style={{
-              opacity: shouldReduceMotion ? 1 : portraitOpacity,
-              scale: shouldReduceMotion ? 1 : portraitScale,
-              y: shouldReduceMotion ? 0 : portraitY,
+              opacity: shouldReduceMotion ? 1 : heroContentOpacity,
+              y: shouldReduceMotion ? 0 : heroContentY,
             }}
-            className="flex-shrink-0 relative flex items-center justify-center"
+            className="pointer-events-auto max-w-2xl"
           >
-            {/* Ambient Cyan Aura */}
-            <div className="absolute inset-0 -m-8 rounded-full bg-gradient-to-tr from-cyan-500/25 via-blue-500/15 to-transparent blur-3xl pointer-events-none" />
+            <span className="mb-4 flex items-center gap-3">
+              <span className="h-px w-8 bg-[var(--text-primary)] md:w-10" />
+              <span className="label">B.Tech CSE · Data Science</span>
+            </span>
 
-            {/* Outer Rotating HUD Coordinate Ring */}
-            <motion.div
-              animate={shouldReduceMotion ? {} : { rotate: 360 }}
-              transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
-              className="absolute -inset-4 sm:-inset-6 rounded-full border border-dashed border-cyan-500/20 pointer-events-none"
-            />
-            <motion.div
-              animate={shouldReduceMotion ? {} : { rotate: -360 }}
-              transition={{ duration: 44, repeat: Infinity, ease: "linear" }}
-              className="absolute -inset-8 sm:-inset-11 rounded-full border border-dotted border-blue-500/15 pointer-events-none"
-            />
+            <h1 className="font-display text-[clamp(3rem,9vw,7rem)] font-bold uppercase leading-[0.9] tracking-[-0.045em]">
+              <span className="block text-[var(--text-primary)]">Rishabh</span>
+              <span className="block text-[var(--text-muted)]">Jain</span>
+            </h1>
 
-            {/* Target Reticle Crosshairs */}
-            <div className="absolute -inset-2 pointer-events-none">
-              <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-[1px] bg-cyan-400" />
-              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-[1px] bg-cyan-400" />
-              <span className="absolute top-1/2 -left-1 -translate-y-1/2 h-2 w-[1px] bg-cyan-400" />
-              <span className="absolute top-1/2 -right-1 -translate-y-1/2 h-2 w-[1px] bg-cyan-400" />
+            <h2 className="mt-4 font-display text-[clamp(1.15rem,2vw,1.75rem)] font-semibold uppercase leading-[1.1] tracking-[-0.02em] text-[var(--text-secondary)]">
+              Computer Science Engineer{" "}
+              <span className="text-[var(--text-primary)]">· Data Science</span>
+            </h2>
+
+            <p className="mt-6 max-w-md text-[var(--text-body)] leading-relaxed text-[var(--text-secondary)]">
+              {personalData.tagline}
+            </p>
+
+            <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--text-secondary)] opacity-40" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--text-secondary)]" />
+              </span>
+              <span className="font-mono text-[var(--text-micro)] uppercase tracking-[0.22em] text-[var(--text-muted)]">
+                VIT Vellore · Class of 2027
+              </span>
             </div>
 
-            {/* Portrait Image Frame */}
-            <div className="relative w-56 h-56 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-2xl sm:rounded-3xl p-[3px] bg-gradient-to-b from-cyan-400/80 via-sky-500/30 to-blue-600/60 shadow-[0_0_50px_rgba(6,182,212,0.35)] overflow-hidden">
-              <div className="relative w-full h-full rounded-[14px] sm:rounded-[22px] overflow-hidden bg-[#070d1e]">
-                <Image
-                  src={personalData.avatarUrl}
-                  alt={`${personalData.name} — Portrait`}
-                  fill
-                  priority
-                  sizes="(max-width: 640px) 224px, (max-width: 1024px) 256px, 320px"
-                  className="object-cover object-top"
-                />
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <a
+                href="#projects"
+                data-cursor-hover
+                className="btn-primary group px-8 py-4 text-[var(--text-label-sm)]"
+              >
+                <span>View Work</span>
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </a>
 
-                {/* Subtle sci-fi overlay scanline */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-400/5 to-transparent h-12 w-full animate-scanline pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050814]/80 via-transparent to-transparent pointer-events-none" />
-              </div>
-
-              {/* Status Badge in corner */}
-              <div className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-md bg-black/75 border border-cyan-500/40 backdrop-blur-md flex items-center gap-1.5 text-[9px] font-mono uppercase text-cyan-300">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse-glow" />
-                AI // VERIFIED
-              </div>
+              <a
+                href={personalData.resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor-hover
+                className="btn-secondary px-8 py-4 text-[var(--text-label-sm)]"
+              >
+                <Download className="h-4 w-4" />
+                <span>Download Résumé</span>
+              </a>
             </div>
+
+            {/* Social links */}
+            <div className="mt-10 flex items-center gap-6">
+              <a
+                href={personalData.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-primary)]"
+                data-cursor-hover
+              >
+                <LinkedinIcon className="h-5 w-5 transition-transform duration-300 group-hover:translate-y-[-2px]" />
+              </a>
+              <a
+                href={personalData.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-primary)]"
+                data-cursor-hover
+              >
+                <GithubIcon className="h-5 w-5 transition-transform duration-300 group-hover:translate-y-[-2px]" />
+              </a>
+              <a
+                href={`mailto:${personalData.email}`}
+                className="group flex items-center gap-2 text-[var(--text-muted)] transition-colors duration-300 hover:text-[var(--text-primary)]"
+                data-cursor-hover
+              >
+                <Mail className="h-5 w-5 transition-transform duration-300 group-hover:translate-y-[-2px]" />
+              </a>
+            </div>
+
+            <p className="mt-8 font-mono text-[var(--text-micro)] uppercase tracking-[0.2em] text-[var(--text-muted)]">
+              {personalData.location}
+            </p>
           </motion.div>
         </div>
 
-        {/* Phase Indicator Micro-dots (Vertical, Right Side) */}
-        <div className="hidden lg:flex fixed right-4 top-1/2 -translate-y-1/2 z-30 flex-col gap-3 font-mono text-[9px]">
-          {["01", "02", "03", "04", "05"].map((stg, i) => {
-            const activeThresholds = [
-              progressNum < 20,
-              progressNum >= 20 && progressNum < 45,
-              progressNum >= 45 && progressNum < 70,
-              progressNum >= 70 && progressNum < 90,
-              progressNum >= 90,
-            ];
-            const isCurrent = activeThresholds[i];
-            return (
-              <div key={stg} className="flex items-center gap-2">
-                <span
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                    isCurrent
-                      ? "bg-cyan-400 scale-150 shadow-[0_0_8px_#22d3ee]"
-                      : "bg-white/20"
-                  }`}
-                />
+        {/* =====================================================
+            STATS BAND — persistent composition element.
+            Part of the hero: visible through the pinned range and
+            scrubbing with the same progress as the frame sequence,
+            so the whole composition moves as one.
+        ===================================================== */}
+
+        <motion.dl
+          className="pointer-events-none absolute bottom-0 left-0 right-0 z-40 mx-auto max-w-[var(--container-max)] px-6 pb-10 sm:px-8 lg:px-12"
+          style={{
+            opacity: shouldReduceMotion ? 1 : statsOpacity,
+            y: shouldReduceMotion ? 0 : statsY,
+          }}
+          aria-hidden={!shouldReduceMotion}
+        >
+          <div className="stats-grid">
+            {personalData.stats.map((stat) => (
+              <div key={stat.label} className="stat-item">
+                <dt className="stat-label">{stat.label}</dt>
+                <dd className="stat-value">{stat.value}</dd>
+                <dd className="stat-subtext">{stat.subtext}</dd>
               </div>
-            );
-          })}
-        </div>
-      </motion.div>
-    </div>
+            ))}
+          </div>
+        </motion.dl>
+
+        
+      </div>
+    </section>
   );
 };
+
+export default Hero;

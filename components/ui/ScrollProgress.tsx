@@ -1,23 +1,29 @@
 "use client";
 
 import React from "react";
-import { motion, useScroll, useSpring, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 export const ScrollProgress: React.FC = () => {
-  const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
-    stiffness: 120,
+    stiffness: 140,
     damping: 30,
     restDelta: 0.001,
   });
 
-  if (shouldReduceMotion) return null;
-
+  /**
+   * The bar is always rendered and hidden with a CSS media query rather than a
+   * `shouldReduceMotion ? null : …` branch.
+   *
+   * useReducedMotion() is false during SSR and true on the client when the
+   * preference is set, so returning null produced a different tree on each
+   * side and threw a hydration mismatch. Tailwind's `motion-reduce:hidden`
+   * keeps the markup identical and still suppresses the bar.
+   */
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-[2px] bg-transparent pointer-events-none">
+    <div className="pointer-events-none fixed left-0 right-0 top-0 z-50 h-[3px] bg-transparent motion-reduce:hidden">
       <motion.div
-        className="h-full bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 origin-left shadow-[0_0_10px_rgba(34,211,238,0.7)]"
+        className="h-full origin-left bg-[var(--accent-primary)] shadow-[0_0_10px_var(--accent-glow-strong)]"
         style={{ scaleX }}
       />
     </div>

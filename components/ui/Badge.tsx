@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: "cyan" | "purple" | "blue" | "emerald" | "amber" | "neutral";
+  variant?: "cyan" | "blue" | "violet" | "emerald" | "orange" | "copper" | "amber" | "purple" | "neutral";
   size?: "sm" | "md";
   className?: string;
 }
@@ -17,17 +17,21 @@ export const Badge: React.FC<BadgeProps> = ({
   className,
 }) => {
   const variantStyles = {
-    cyan: "bg-cyan-500/10 text-cyan-300 border-cyan-500/30 shadow-[0_0_10px_rgba(6,182,212,0.12)]",
-    purple: "bg-purple-500/10 text-purple-300 border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.12)]",
-    blue: "bg-blue-500/10 text-blue-300 border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.12)]",
-    emerald: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.12)]",
-    amber: "bg-amber-500/10 text-amber-300 border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.12)]",
-    neutral: "bg-slate-800/80 text-slate-300 border-slate-700/50",
+    cyan: "bg-[var(--accent-primary-muted)] text-[var(--accent-primary)] border-[var(--border-accent)]",
+    blue: "bg-[var(--accent-primary-muted)] text-[var(--accent-primary)] border-[var(--border-accent)]",
+    violet: "bg-[var(--accent-primary-muted)] text-[var(--accent-primary)] border-[var(--border-accent)]",
+    emerald: "bg-[var(--accent-primary-muted)] text-[var(--accent-primary)] border-[var(--border-accent)]",
+    neutral: "bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border-default)]",
+    // Backwards-compatible aliases
+    orange: "bg-[var(--accent-primary-muted)] text-[var(--accent-primary)] border-[var(--border-accent)]",
+    copper: "bg-[var(--accent-primary-muted)] text-[var(--accent-primary)] border-[var(--border-accent)]",
+    amber: "bg-[var(--accent-primary-muted)] text-[var(--accent-primary)] border-[var(--border-accent)]",
+    purple: "bg-[var(--accent-primary-muted)] text-[var(--accent-primary)] border-[var(--border-accent)]",
   };
 
   const sizeStyles = {
-    sm: "px-2.5 py-0.5 text-[11px]",
-    md: "px-3 py-1 text-xs",
+    sm: "px-2.5 py-1 font-mono text-[var(--text-micro)] uppercase tracking-[0.15em]",
+    md: "px-3 py-1.5 font-mono text-[var(--text-micro)] uppercase tracking-[0.15em]",
   };
 
   return (

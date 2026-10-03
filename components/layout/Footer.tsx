@@ -2,76 +2,80 @@
 
 import React from "react";
 import { personalData } from "@/data/personal";
-import { ArrowUp, Mail } from "lucide-react";
-import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
+import { ArrowUp } from "lucide-react";
+import { motion } from "framer-motion";
+
+const ease = [0.16, 1, 0.3, 1] as const;
 
 export const Footer: React.FC = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const links = [
+    { label: "GitHub", href: personalData.github },
+    { label: "LinkedIn", href: personalData.linkedin },
+    { label: "Email", href: `mailto:${personalData.email}` },
+    { label: "Résumé", href: personalData.resumeUrl },
+  ];
+
   return (
-    <footer className="relative border-t border-sky-500/15 bg-[#050916]/90 backdrop-blur-xl py-12 px-4 md:px-8 pb-24 md:pb-12 text-slate-400 text-xs">
-      <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]" />
-            <span className="font-bold text-sm text-white tracking-wide">
-              {personalData.name}
-            </span>
+    <footer className="border-t border-[var(--border-default)] bg-[var(--bg-primary)]">
+      <div className="mx-auto w-full max-w-[var(--container-max)] px-6 py-14 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3 md:items-end">
+          {/* identity */}
+          <div>
+            <p className="font-display text-xl font-bold uppercase tracking-[-0.03em] text-[var(--text-primary)]">
+              Rishabh Jain
+            </p>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">
+              Computer Science & Data Science
+            </p>
           </div>
-          <p className="text-slate-400 text-xs">
-            B.Tech CSE (Data Science) @ VIT Vellore • Class of 2027
-          </p>
+
+          {/* links */}
+          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 md:justify-center" aria-label="Footer">
+            {links.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target={link.href.startsWith("mailto:") ? undefined : "_blank"}
+                rel={link.href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+                className="link font-mono text-[var(--text-micro)] uppercase tracking-[0.18em]"
+                data-cursor-hover
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* meta */}
+          <div className="flex items-center justify-between gap-4 md:justify-end">
+            <span className="font-mono text-[var(--text-micro)] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+              © {new Date().getFullYear()}
+            </span>
+            <button
+              onClick={scrollToTop}
+              aria-label="Back to top"
+              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[var(--border-default)] text-[var(--text-muted)] transition-colors duration-300 hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+            >
+              <ArrowUp className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <a
-            href={personalData.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-            className="p-2 rounded-lg bg-[#091224] hover:bg-[#101f3d] text-slate-400 hover:text-cyan-300 border border-sky-500/15 transition-colors"
-          >
-            <GithubIcon className="w-4 h-4" />
-          </a>
-
-          <a
-            href={personalData.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn"
-            className="p-2 rounded-lg bg-[#091224] hover:bg-[#101f3d] text-slate-400 hover:text-cyan-300 border border-sky-500/15 transition-colors"
-          >
-            <LinkedinIcon className="w-4 h-4" />
-          </a>
-
-          <a
-            href={`mailto:${personalData.email}`}
-            aria-label="Email"
-            className="p-2 rounded-lg bg-[#091224] hover:bg-[#101f3d] text-slate-400 hover:text-cyan-300 border border-sky-500/15 transition-colors"
-          >
-            <Mail className="w-4 h-4" />
-          </a>
-
-          <button
-            onClick={scrollToTop}
-            aria-label="Back to top"
-            className="p-2 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition-colors ml-2 cursor-pointer"
-          >
-            <ArrowUp className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto mt-8 pt-6 border-t border-sky-500/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-400">
-        <div>
-          © {new Date().getFullYear()} Rishabh Jain. All rights reserved.
-        </div>
-        <div className="flex items-center gap-1.5 text-slate-400">
-          <span>Engineered with Next.js, TypeScript & Tailwind CSS</span>
-        </div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease }}
+          className="mt-12 border-t border-[var(--border-default)] pt-6 meta-text"
+        >
+          Built with precision · Next.js · Tailwind · Framer Motion
+        </motion.p>
       </div>
     </footer>
   );
 };
+
+export default Footer;

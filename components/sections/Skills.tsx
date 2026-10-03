@@ -1,146 +1,102 @@
 "use client";
 
-import React, { useState } from "react";
-import { skillCategories, SkillCategory } from "@/data/skills";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import React from "react";
+import { skillCategories } from "@/data/skills";
 import { MotionSection } from "@/components/ui/MotionSection";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Code2, Brain, Database, Server, Wrench, Terminal, Cpu } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { motion, useReducedMotion } from "framer-motion";
 
-type IconFC = React.FC<{ className?: string }>;
-
-const iconMap: Record<string, IconFC> = {
-  Code: Code2 as IconFC,
-  Brain: Brain as IconFC,
-  Database: Database as IconFC,
-  Server: Server as IconFC,
-  Wrench: Wrench as IconFC,
-};
+const ease = [0.16, 1, 0.3, 1] as const;
 
 export const Skills: React.FC = () => {
-  const [activeId, setActiveId] = useState(skillCategories[0].id);
   const shouldReduceMotion = useReducedMotion();
 
-  const activeCategory: SkillCategory =
-    skillCategories.find((c) => c.id === activeId) || skillCategories[0];
-  const ActiveIcon: IconFC = (iconMap[activeCategory.icon] ?? Cpu) as IconFC;
-
   return (
-    <MotionSection id="skills" className="pt-4">
-      {/* HUD Lead-in */}
-      <div className="mb-2">
-        <div className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.28em] text-cyan-400 mb-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse-glow" />
-          TECHNICAL ECOSYSTEM // SYSTEM MAP
+    <MotionSection id="skills" className="py-0">
+      <section className="section-container">
+        {/* =====================================================
+            SECTION HEADER
+        ===================================================== */}
+
+        <div className="mb-14 border-b border-[var(--border-default)] pb-10 md:mb-16">
+          <motion.span
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.6, ease }}
+            className="label mb-5 block"
+          >
+            03 / Stack
+          </motion.span>
+
+          <motion.h2
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.85, delay: 0.05, ease }}
+            className="heading-display max-w-4xl text-[var(--text-primary)]"
+          >
+            The stack I{" "}
+            <span className="text-[var(--text-muted)]">build with.</span>
+          </motion.h2>
         </div>
-        <SectionHeading
-          title="Skills & Capabilities"
-          subtitle="Engineering stack across machine learning frameworks, data architectures, and model deployment."
-          accentColor="cyan"
-        />
-      </div>
 
-      {/* System Category Tabs */}
-      <div className="flex flex-wrap gap-2.5 mb-6 font-mono text-xs">
-        {skillCategories.map((cat) => {
-          const TabIcon = (iconMap[cat.icon] ?? Terminal) as IconFC;
-          const isActive = activeId === cat.id;
+        {/* =====================================================
+            CAPABILITY GRID — 2x2 category blocks
+        ===================================================== */}
 
-          return (
-            <button
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {skillCategories.map((cat, index) => (
+            <motion.div
               key={cat.id}
-              type="button"
-              onClick={() => setActiveId(cat.id)}
-              data-cursor-hover
-              className={cn(
-                "flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-all duration-200 cursor-pointer focus:outline-none",
-                isActive
-                  ? "bg-cyan-950/70 border-cyan-400/50 text-cyan-200 shadow-[0_0_20px_rgba(6,182,212,0.25)]"
-                  : "border-white/8 bg-[#060b19] text-slate-400 hover:border-white/20 hover:text-white"
-              )}
+              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.75, delay: 0.05 * index, ease }}
+              className="group rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--bg-card)] p-6 transition-colors duration-500 hover:border-[var(--border-hover)] sm:p-8"
             >
-              <TabIcon className={cn("w-3.5 h-3.5", isActive ? "text-cyan-400" : "text-slate-500")} />
-              <span>{cat.category.split(" ")[0]}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Technical System Map Content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeId}
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -10 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="rounded-2xl sm:rounded-3xl border border-cyan-500/20 bg-[#060b1b] p-6 sm:p-8 backdrop-blur-md relative overflow-hidden"
-        >
-          {/* Subtle Corner Brackets */}
-          <div className="absolute top-3 left-3 text-cyan-500/30 pointer-events-none hud-bracket">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M 1 15 L 1 1 L 15 1" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
-          </div>
-          <div className="absolute top-3 right-3 text-cyan-500/30 pointer-events-none hud-bracket">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M 1 1 L 15 1 L 15 15" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
-          </div>
-
-          {/* Category Banner */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-5 border-b border-white/8">
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-                <ActiveIcon className="w-5 h-5" />
+              {/* header */}
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-display text-[clamp(1.35rem,2.2vw,1.85rem)] font-bold uppercase leading-[1.04] tracking-[-0.03em] text-[var(--text-primary)]">
+                    {cat.category}
+                  </h3>
+                  <p className="body-text-sm mt-2 max-w-sm text-[var(--text-muted)]">
+                    {cat.description}
+                  </p>
+                </div>
+                <span className="shrink-0 font-mono text-[var(--text-micro)] tracking-[0.2em] text-[var(--text-dim)]">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
               </div>
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                  {activeCategory.category}
-                </h3>
-                <p className="text-xs text-slate-400">{activeCategory.description}</p>
-              </div>
-            </div>
 
-            <div className="font-mono text-[10px] text-cyan-400/80 bg-cyan-950/40 px-3 py-1 rounded-md border border-cyan-500/20 self-start sm:self-auto">
-              MODULE // {activeCategory.skills.length} NODES
-            </div>
-          </div>
-
-          {/* Capabilities Node Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            {activeCategory.skills.map((skill, i) => (
-              <motion.div
-                key={skill.name}
-                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, delay: i * 0.04 }}
-                className="flex items-start gap-3.5 p-4 rounded-xl bg-white/[0.02] border border-white/6 hover:border-cyan-500/30 hover:bg-cyan-950/10 transition-all duration-200 group"
-              >
-                <span className="mt-1 w-2 h-2 rounded-full bg-cyan-400/80 group-hover:bg-cyan-300 group-hover:shadow-[0_0_8px_#22d3ee] transition-all shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-sm font-semibold text-white group-hover:text-cyan-200 transition-colors">
+              {/* skills */}
+              <ul className="mt-6 flex flex-wrap gap-2">
+                {cat.skills.map((skill) => (
+                  <motion.li
+                    key={skill.name}
+                    initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 8 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-40px" }}
+                    transition={{ duration: 0.4, ease }}
+                    className="chip flex items-center gap-2"
+                  >
+                    <span className="text-[var(--text-label-sm)] font-semibold normal-case tracking-normal text-[var(--text-primary)]">
                       {skill.name}
                     </span>
                     {skill.tag && (
-                      <span className="px-2 py-0.5 text-[9px] font-mono uppercase rounded bg-cyan-950/60 border border-cyan-500/25 text-cyan-300">
+                      <span className="meta-text normal-case tracking-normal text-[var(--text-dim)]">
                         {skill.tag}
                       </span>
                     )}
-                  </div>
-                  {skill.description && (
-                    <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                      {skill.description}
-                    </p>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </AnimatePresence>
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+          ))}
+        </div>
+      </section>
     </MotionSection>
   );
 };
+
+export default Skills;

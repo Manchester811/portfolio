@@ -26,20 +26,16 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const sizeStyles = {
-    sm: "px-4 py-1.5 text-xs rounded-full gap-1.5",
-    md: "px-6 py-2.5 text-sm rounded-full gap-2",
-    lg: "px-8 py-3.5 text-base rounded-full gap-2.5",
+    sm: "px-5 py-2 text-[var(--text-micro)] rounded-full gap-2",
+    md: "px-7 py-3 text-[var(--text-label-sm)] rounded-full gap-2.5",
+    lg: "px-9 py-4 text-[var(--text-label)] rounded-full gap-3",
   };
 
-  const variantStyles = {
-    primary:
-      "bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 text-white font-medium shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_28px_rgba(6,182,212,0.6)] hover:brightness-110 border border-cyan-300/30",
-    secondary:
-      "bg-[#0e1933]/90 text-slate-200 font-medium border border-sky-500/25 hover:border-cyan-400/50 hover:bg-[#142347] hover:text-white shadow-[0_0_15px_rgba(0,0,0,0.3)]",
-    outline:
-      "bg-transparent text-cyan-400 border border-cyan-500/40 hover:bg-cyan-500/10 hover:border-cyan-400 font-medium",
-    ghost:
-      "bg-transparent text-slate-300 hover:text-white hover:bg-white/5 font-normal",
+  const variantClasses = {
+    primary: "btn-primary",
+    secondary: "btn-secondary",
+    outline: "btn-outline",
+    ghost: "btn-ghost",
   };
 
   const content = (
@@ -50,9 +46,9 @@ export const Button: React.FC<ButtonProps> = ({
   );
 
   const baseClasses = cn(
-    "inline-flex items-center justify-center tracking-wide transition-all duration-200 select-none cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400",
+    "inline-flex items-center justify-center font-sans font-semibold tracking-wider transition-all duration-200 select-none cursor-pointer focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)]",
     sizeStyles[size],
-    variantStyles[variant],
+    variantClasses[variant],
     className
   );
 
@@ -62,7 +58,7 @@ export const Button: React.FC<ButtonProps> = ({
         href={href}
         target={target}
         rel={rel}
-        whileHover={{ scale: 1.03 }}
+        whileHover={{ scale: 1.02, y: -2 }}
         whileTap={{ scale: 0.98 }}
         className={baseClasses}
       >
@@ -73,7 +69,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <motion.button
-      whileHover={{ scale: 1.03 }}
+      whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       className={baseClasses}
       {...props}

@@ -3,47 +3,34 @@ export interface CertificationItem {
   name: string;
   issuer: string;
   issueDate: string;
-  // credentialId intentionally removed — never fabricate IDs
-  verificationUrl?: string; // Only add when you have the real URL
-  badge: string;
-  skills: string[];
+  credentialId?: string;
+  verificationUrl?: string;
 }
 
 export const certificationsData: CertificationItem[] = [
   {
-    id: "dl-spec",
-    name: "Deep Learning Specialization",
-    issuer: "DeepLearning.AI (Coursera)",
-    issueDate: "2024",
-    // verificationUrl: "[ADD REAL VERIFICATION URL]",
-    badge: "Deep Learning",
-    skills: ["CNNs", "RNNs / LSTMs", "Hyperparameter Tuning", "Attention Models", "TensorFlow"],
+    id: "aws-cloud-practitioner",
+    name: "AWS Cloud Practitioner Essentials",
+    issuer: "AWS Training & Certification",
+    issueDate: "Aug 2026",
   },
   {
-    id: "tf-dev",
-    name: "TensorFlow Developer Certificate",
-    issuer: "DeepLearning.AI / Google",
-    issueDate: "2024",
-    // verificationUrl: "[ADD REAL VERIFICATION URL]",
-    badge: "Computer Vision & NLP",
-    skills: ["TensorFlow 2.x", "Image Classification", "NLP", "Time Series Forecasting"],
+    id: "qualcomm-ai-upselling",
+    name: "AI Upskilling Certificate: Technical Foundation",
+    issuer: "Qualcomm Academy",
+    issueDate: "Aug 2026",
   },
   {
-    id: "ml-spec",
-    name: "Machine Learning Specialization",
-    issuer: "Stanford Online & DeepLearning.AI",
-    issueDate: "2023",
-    // verificationUrl: "[ADD REAL VERIFICATION URL]",
-    badge: "Supervised & Unsupervised ML",
-    skills: ["Linear & Logistic Regression", "Decision Trees", "SVMs", "Clustering", "Scikit-Learn"],
+    id: "tcs-ion-career-edge",
+    name: "TCS iON Career Edge — Young Professional",
+    issuer: "Tata Consultancy Services",
+    issueDate: "Aug 2026",
   },
   {
-    id: "gcp-cloud",
-    name: "Google Cloud Computing Foundations",
-    issuer: "Google Cloud Skills Boost",
-    issueDate: "2024",
-    // verificationUrl: "[ADD REAL VERIFICATION URL]",
-    badge: "Cloud & Infrastructure",
-    skills: ["GCP Compute Engine", "BigQuery", "Cloud Storage", "Containerized Workloads"],
+    id: "generative-ai-ibm",
+    name: "Generative AI",
+    issuer: "IBM SkillsNetwork / Adroit Pro Learn",
+    issueDate: "2025",
+    credentialId: "1568ecfcc98a4a2b98ea34c3642c1ad6",
   },
 ];

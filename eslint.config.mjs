@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Tooling state + parallel Agent Manager worktrees are not part of this build.
+    ".kilo/**",
   ]),
 ]);
 

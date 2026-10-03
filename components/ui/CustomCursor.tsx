@@ -5,19 +5,31 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 
 export const CustomCursor: React.FC = () => {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const [cursorType, setCursorType] = useState<"default" | "hover" | "project">("default");
   const [label, setLabel] = useState("");
   const isVisible = useRef(false);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+
+    // Defer state updates to avoid sync setState in effect warning
+    const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    setIsTouchDevice(touch);
+    setIsClient(true);
+  }, []);
 
   // Fast center dot
   const rawX = useMotionValue(-100);
   const rawY = useMotionValue(-100);
-  const dotSpringCfg = { stiffness: 850, damping: 45, mass: 0.2 };
+  const dotSpringCfg = { stiffness: 900, damping: 45, mass: 0.2 };
   const x = useSpring(rawX, dotSpringCfg);
   const y = useSpring(rawY, dotSpringCfg);
 
   // Smooth lag trailing ring
-  const ringSpringCfg = { stiffness: 220, damping: 25, mass: 0.6 };
+  const ringSpringCfg = { stiffness: 240, damping: 25, mass: 0.6 };
   const rx = useSpring(rawX, ringSpringCfg);
   const ry = useSpring(rawY, ringSpringCfg);
 
@@ -32,7 +44,7 @@ export const CustomCursor: React.FC = () => {
 
     if (projectEl) {
       setCursorType("project");
-      const customLabel = projectEl.getAttribute("data-cursor-label") || "INSPECT ↗";
+      const customLabel = projectEl.getAttribute("data-cursor-label") || "VIEW ↗";
       setLabel(customLabel);
     } else if (interactiveEl) {
       setCursorType("hover");
@@ -45,10 +57,7 @@ export const CustomCursor: React.FC = () => {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
-      setIsTouchDevice(true);
-      return;
-    }
+    if ("ontouchstart" in window || navigator.maxTouchPoints > 0) return;
 
     const move = (e: MouseEvent) => {
       rawX.set(e.clientX);
@@ -67,7 +76,7 @@ export const CustomCursor: React.FC = () => {
     };
   }, [rawX, rawY, checkTarget]);
 
-  if (isTouchDevice) return null;
+  if (!isClient || isTouchDevice) return null;
 
   return (
     <>
@@ -83,24 +92,24 @@ export const CustomCursor: React.FC = () => {
       >
         <motion.div
           animate={{
-            width: cursorType === "project" ? 84 : cursorType === "hover" ? 48 : 34,
-            height: cursorType === "project" ? 84 : cursorType === "hover" ? 48 : 34,
+            width: cursorType === "project" ? 80 : cursorType === "hover" ? 44 : 28,
+            height: cursorType === "project" ? 80 : cursorType === "hover" ? 44 : 28,
             borderColor:
               cursorType === "project"
-                ? "rgba(34,211,238,0.7)"
+                ? "#65D9FF"
                 : cursorType === "hover"
-                ? "rgba(56,189,248,0.6)"
-                : "rgba(34,211,238,0.35)",
+                ? "rgba(209, 140, 60, 0.6)"
+                : "rgba(240, 235, 227, 0.2)",
             backgroundColor:
               cursorType === "project"
-                ? "rgba(6,182,212,0.12)"
+                ? "rgba(209, 140, 60, 0.1)"
                 : cursorType === "hover"
-                ? "rgba(34,211,238,0.06)"
+                ? "rgba(209, 140, 60, 0.06)"
                 : "transparent",
             scale: cursorType === "project" ? 1.05 : 1,
           }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-full border backdrop-blur-[1px] flex items-center justify-center transition-shadow shadow-[0_0_15px_rgba(6,182,212,0.25)]"
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-full border flex items-center justify-center"
         />
       </motion.div>
 
@@ -116,21 +125,30 @@ export const CustomCursor: React.FC = () => {
       >
         <motion.div
           animate={{
-            width: cursorType === "project" ? 4 : cursorType === "hover" ? 8 : 6,
-            height: cursorType === "project" ? 4 : cursorType === "hover" ? 8 : 6,
-            backgroundColor: cursorType === "project" ? "#38bdf8" : "#22d3ee",
+            width: cursorType === "project" ? 4 : cursorType === "hover" ? 7 : 5,
+            height: cursorType === "project" ? 4 : cursorType === "hover" ? 7 : 5,
+            backgroundColor:
+              cursorType === "project"
+                ? "#65D9FF"
+                : cursorType === "hover"
+                ? "#4FC3E6"
+                : "#F5F5F5",
+            boxShadow:
+              cursorType !== "default"
+                ? "0 0 8px rgba(209, 140, 60, 0.7)"
+                : "none",
           }}
           transition={{ duration: 0.15 }}
-          className="rounded-full shadow-[0_0_10px_#22d3ee]"
+          className="rounded-full"
         />
 
-        {/* Contextual Label for Projects or Interactive Elements */}
+        {/* Contextual Label */}
         {cursorType === "project" && label && (
           <motion.span
             initial={{ opacity: 0, scale: 0.75 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.75 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-mono font-bold tracking-[0.2em] text-cyan-300 uppercase whitespace-nowrap pointer-events-none select-none text-glow-subtle"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-sans font-semibold tracking-widest text-[#65D9FF] uppercase whitespace-nowrap pointer-events-none select-none"
           >
             {label}
           </motion.span>
