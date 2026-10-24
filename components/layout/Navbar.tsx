@@ -6,6 +6,7 @@ import { ArrowUpRight, Search, Menu, X } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useSmoothScroll } from "@/components/layout/SmoothScroll";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { GooeyNav } from "@/components/reactbits/GooeyNav";
 
 interface NavItem {
   id: string;
@@ -106,125 +107,39 @@ export const Navbar: React.FC = () => {
         if (!event.currentTarget.contains(event.relatedTarget)) setMobileMenuOpen(false);
       }}
     >
-      <div className="glass-pill flex items-center gap-1 rounded-full p-1 lg:p-1.5" data-scrolled={isScrolled}>
-        <button
-          type="button"
-          onClick={() => handleNavClick("hero")}
-          className="nav-icon-button font-display text-xs font-bold"
-          aria-label="Rishabh Jain — back to top"
-          title="Rishabh Jain — back to top"
-          data-cursor-hover
-        >
+      <div className="flex items-center gap-2 glass-pill rounded-full px-3 py-2">
+        <a href="#hero" onClick={(e) => { e.preventDefault(); handleNavClick("hero"); }} className="nav-icon-button font-display text-xs font-bold" aria-label="Rishabh Jain — back to top" title="Rishabh Jain">
           <span className="flex size-8 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)]">RJ</span>
+        </a>
+        <div className="mx-1 h-4 w-px bg-[var(--border-default)]" aria-hidden="true" />
+        <GooeyNav />
+        <div className="mx-1 h-4 w-px bg-[var(--border-default)]" aria-hidden="true" />
+        <button type="button" onClick={openContact} className="hidden min-h-8 cursor-pointer items-center gap-1 rounded-full bg-[var(--text-primary)] px-3 text-xs font-semibold text-[var(--bg-primary)] transition-colors hover:bg-[var(--accent-primary-hover)] lg:flex" data-cursor-hover aria-label="Hire me">
+          Hire me <ArrowUpRight className="size-3.5" aria-hidden="true" />
         </button>
-
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => handleNavClick(item.id)}
-              aria-current={activeSection === item.id ? "location" : undefined}
-              className="nav-link min-h-8 rounded-full px-3 text-sm font-medium"
-              data-cursor-hover
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <span className="mx-1 h-4 w-px bg-[var(--border-default)]" aria-hidden="true" />
-        <button
-          type="button"
-          onClick={() => {
-            setMobileMenuOpen(false);
-            window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }));
-          }}
-          className="nav-icon-button"
-          data-cursor-hover
-          aria-label="Open command palette"
-          title="Search · Ctrl/⌘ K"
-        >
+        <button type="button" onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true })); }} className="nav-icon-button" data-cursor-hover aria-label="Open command palette" title="Search · Ctrl/⌘ K">
           <Search className="size-4" aria-hidden="true" />
         </button>
         <ThemeToggle />
-        <button
-          type="button"
-          onClick={openContact}
-          className="hidden min-h-8 cursor-pointer items-center gap-1 rounded-full bg-[var(--text-primary)] px-3 text-xs font-semibold text-[var(--bg-primary)] transition-colors hover:bg-[var(--accent-primary-hover)] lg:flex"
-          data-cursor-hover
-        >
-          Hire me <ArrowUpRight className="size-3.5" aria-hidden="true" />
-        </button>
-        <button
-          ref={menuButtonRef}
-          type="button"
-          onClick={() => setMobileMenuOpen((open) => !open)}
-          className="nav-link flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-medium lg:hidden"
-          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileMenuOpen}
-          aria-controls="mobile-navigation"
-          data-cursor-hover
-        >
-          Menu
-          {mobileMenuOpen ? <X className="size-4" aria-hidden="true" /> : <Menu className="size-4" aria-hidden="true" />}
+        <button ref={menuButtonRef} type="button" onClick={() => setMobileMenuOpen((o) => !o)} className="nav-link flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-medium lg:hidden" aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation" data-cursor-hover>
+          Menu {mobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
         </button>
       </div>
-
-      {/* Non-modal disclosure: the page and theme control remain accessible. */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            id="mobile-navigation"
-            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -6 }}
-            transition={{ duration: shouldReduceMotion ? 0 : 0.16 }}
-            style={{ backgroundColor: "var(--bg-secondary)" }}
-            className="glass-pill absolute left-1/2 top-full mt-2 max-h-[calc(100dvh-7rem)] w-72 max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-[var(--radius-xl)] p-2 lg:hidden"
-            data-lenis-prevent
-          >
+          <motion.div id="mobile-navigation" initial={{ opacity: 0, y: shouldReduceMotion ? 0 : -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -6 }} transition={{ duration: shouldReduceMotion ? 0 : 0.16 }} style={{ backgroundColor: "var(--bg-secondary)" }} className="glass-pill absolute left-1/2 top-full mt-2 max-h-[calc(100dvh-7rem)] w-72 max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-[var(--radius-xl)] p-2 lg:hidden" data-lenis-prevent>
             <nav className="flex flex-col gap-1" aria-label="Mobile">
               {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => {
-                    menuButtonRef.current?.focus();
-                    handleNavClick(item.id);
-                  }}
-                  aria-current={activeSection === item.id ? "location" : undefined}
-                  className="nav-link flex min-h-11 items-center justify-between rounded-full px-4 text-left text-sm font-medium"
-                >
+                <button key={item.id} type="button" onClick={() => { menuButtonRef.current?.focus(); handleNavClick(item.id); }} aria-current={activeSection === item.id ? "location" : undefined} className="nav-link flex min-h-11 items-center justify-between rounded-full px-4 text-left text-sm font-medium" data-cursor-hover>
                   {item.label}
                   {activeSection === item.id && <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />}
                 </button>
               ))}
             </nav>
-
             <div className="mt-2 grid grid-cols-2 gap-1 border-t border-[var(--border-subtle)] pt-2">
-              <button type="button" onClick={openContact} className="btn-primary col-span-2 min-h-11 px-3">
-                <span>Start a conversation</span>
-                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-              </button>
-              <a
-                href={personalData.resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="nav-link flex min-h-11 items-center justify-center gap-1 rounded-full text-xs"
-              >
-                <span>Download Résumé</span>
-                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a
-                href={personalData.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="nav-link flex min-h-11 items-center justify-center gap-1 rounded-full text-xs"
-              >
-                <span>GitHub</span>
-                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-              </a>
+              <button type="button" onClick={openContact} className="btn-primary col-span-2 min-h-11 px-3"><span>Start a conversation</span><ArrowUpRight className="h-4 w-4" /></button>
+              <a href={personalData.resumeUrl} target="_blank" rel="noopener noreferrer" className="nav-link flex min-h-11 items-center justify-center gap-1 rounded-full text-xs"><span>Download Résumé</span><ArrowUpRight className="h-4 w-4" /></a>
+              <a href={personalData.github} target="_blank" rel="noopener noreferrer" className="nav-link flex min-h-11 items-center justify-center gap-1 rounded-full text-xs"><span>GitHub</span><ArrowUpRight className="h-4 w-4" /></a>
             </div>
           </motion.div>
         )}

@@ -2,10 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Manrope, Geist_Mono } from "next/font/google";
 import { personalConfig, siteConfig } from "@/data/config";
 import { themeInitScript } from "@/lib/theme";
-import { Dock } from "@/components/reactbits/Dock";
 import "./globals.css";
 import "@/components/reactbits/SpotlightCard.css";
-import "@/components/reactbits/Dock.css";
+import "@/components/reactbits/GooeyNav.css";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
@@ -141,7 +140,6 @@ export default function RootLayout({
           }}
         />
         {children}
-        <Dock />
       </body>
     </html>
   );
