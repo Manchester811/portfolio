@@ -10,10 +10,12 @@ import { motion, useReducedMotion, useTransform } from "framer-motion";
 import { useFrameSequence } from "@/components/scroll/useFrameSequence";
 import { framePath } from "@/components/scroll/frameSequence";
 import { MagneticElement } from "@/components/motion/MagneticElement";
+import { TrueFocus } from "@/components/reactbits/TrueFocus";
 import { projectsData } from "@/data/projects";
 import { certificationsData } from "@/data/certifications";
 import { educationData } from "@/data/education";
 import { stackData } from "@/data/stack";
+import { ClickSpark } from "@/components/reactbits/ClickSpark";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -170,30 +172,55 @@ export const Hero: React.FC = () => {
               {personalData.tagline}
             </motion.p>
 
-            {/* CTA Buttons */}
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <MagneticElement>
-                <a
-                  href="#projects"
-                  data-cursor-hover
-                  className="btn-primary group px-7 py-3.5 text-[var(--text-label-sm)]"
-                >
-                  <span>View Work</span>
-                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </a>
-              </MagneticElement>
+            <TrueFocus
+              sentence="Building Intelligent Systems"
+              focusWords={["Building", "Intelligent", "Systems"]}
+              blurAmount={3}
+              focusScale={1.05}
+              unfocusedOpacity={0.6}
+              cornerSize={10}
+              borderWidth={1.5}
+              animationDuration={0.6}
+              pauseBetweenAnimations={1.2}
+              className="mt-3 mb-1"
+            />
 
-              <a
-                href={personalData.resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cursor-hover
-                className="btn-secondary px-6 py-3.5 text-[var(--text-label-sm)]"
-              >
-                <Download className="h-4 w-4" />
-                <span>Résumé</span>
-              </a>
-            </div>
+            {/* CTA Buttons */}
+            <ClickSpark
+              className="mt-8 w-fit max-w-full"
+              sparkSize={9}
+              sparkRadius={24}
+              sparkCount={6}
+              sparkWidth={1.7}
+              duration={400}
+              randomness={0.18}
+              glow={0.08}
+              data-click-spark="hero-cta"
+            >
+              <div className="flex flex-wrap items-center gap-4">
+                <MagneticElement>
+                  <a
+                    href="#projects"
+                    data-cursor-hover
+                    className="btn-primary group px-7 py-3.5 text-[var(--text-label-sm)]"
+                  >
+                    <span>View Work</span>
+                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </a>
+                </MagneticElement>
+
+                <a
+                  href={personalData.resumeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor-hover
+                  className="btn-secondary px-6 py-3.5 text-[var(--text-label-sm)]"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Résumé</span>
+                </a>
+              </div>
+            </ClickSpark>
 
             {/* Social Links */}
             <div className="mt-7 flex items-center gap-5">
