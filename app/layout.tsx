@@ -5,6 +5,7 @@ import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 import "@/components/reactbits/SpotlightCard.css";
 import "@/components/reactbits/GooeyNav.css";
+import "@/components/reactbits/TrueFocus.css";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",

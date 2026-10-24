@@ -1,0 +1,27 @@
+.true-focus {
+  display: inline-block;
+  color: var(--text-primary);
+  font-family: var(--font-display), "Space Grotesk", system-ui, sans-serif;
+  user-select: none;
+}
+
+.true-focus-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35em 0.35em;
+}
+
+.true-focus-word {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .true-focus-word,
+  .true-focus-word span {
+    filter: none !important;
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
