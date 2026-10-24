@@ -4,6 +4,7 @@ import React from "react";
 import { personalData } from "@/data/personal";
 import { MotionSection } from "@/components/ui/MotionSection";
 import { motion, useReducedMotion } from "framer-motion";
+import { FadeContent } from "@/components/reactbits/FadeContent";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -43,7 +44,16 @@ export const About: React.FC = () => {
             BODY — 7 / 5 horizontal split
         ===================================================== */}
 
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-12">
+        <FadeContent
+          effect="focus"
+          blur={2}
+          duration={0.68}
+          ease="power2.out"
+          threshold={0.12}
+          initialOpacity={0.18}
+          once
+        >
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-12">
           {/* ---------- LEFT — HEADING + STATEMENT + PROFILE ---------- */}
           <div className="lg:col-span-7">
             <motion.h2
@@ -133,7 +143,8 @@ export const About: React.FC = () => {
               ))}
             </div>
           </div>
-        </div>
+          </div>
+        </FadeContent>
       </section>
     </MotionSection>
   );

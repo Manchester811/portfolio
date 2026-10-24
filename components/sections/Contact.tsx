@@ -7,6 +7,7 @@ import { GithubIcon, LinkedinIcon } from "@/components/ui/Icons";
 import { MotionSection } from "@/components/ui/MotionSection";
 import { LocalTime } from "@/components/ui/LocalTime";
 import { personalData } from "@/data/personal";
+import { FadeContent } from "@/components/reactbits/FadeContent";
 
 interface FormValues {
   name: string;
@@ -218,7 +219,15 @@ export function Contact() {
   return (
     <MotionSection id="contact" className="py-0">
       <section className="section-container">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <FadeContent
+          effect="fade"
+          duration={0.72}
+          ease="power2.out"
+          threshold={0.1}
+          initialOpacity={0.12}
+          once
+        >
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <span className="label block">07 / Contact</span>
             <h2 className="heading-hero mt-6 text-[var(--text-primary)]">Let&apos;s build<br />something<br /><span className="text-[var(--text-muted)]">intelligent.</span></h2>
@@ -239,7 +248,8 @@ export function Contact() {
               <p className="mt-4 text-center text-xs leading-6 text-[var(--text-muted)]">Name, email, optional phone, and a short message. No account required.</p>
             </div>
           </div>
-        </div>
+          </div>
+        </FadeContent>
       </section>
       <ContactModal key={modalOpen ? "contact-open" : "contact-closed"} open={modalOpen} onClose={closeModal} />
     </MotionSection>

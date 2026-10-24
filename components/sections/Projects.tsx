@@ -8,6 +8,8 @@ import { projectsData, type ProjectItem } from "@/data/projects";
 import { ArchitectureDiagram } from "@/components/ui/ArchitectureDiagram";
 import { ProjectDossier } from "@/components/ui/ProjectDossier";
 import { MotionSection } from "@/components/ui/MotionSection";
+import { SpotlightCard } from "@/components/reactbits/SpotlightCard";
+import { FadeContent } from "@/components/reactbits/FadeContent";
 
 export function Projects() {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -60,63 +62,87 @@ export function Projects() {
             id={`project-panel-${project.id}`}
             role="tabpanel"
             aria-labelledby={`project-tab-${project.id}`}
-            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18, filter: "blur(8px)" }}
+             initial={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: -12, filter: "blur(8px)" }}
             transition={{ duration: shouldReduceMotion ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] }}
-            className="grid gap-8 lg:grid-cols-12 lg:gap-10"
+            className="relative"
           >
-            <div className="lg:col-span-5">
-              <div className="mb-6 flex items-center gap-3">
-                <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-primary)]" />
-                <span className="label-muted">{project.badge}</span>
-              </div>
-              <h3 className="font-display text-[clamp(2.4rem,6vw,5.8rem)] font-bold uppercase leading-[0.86] tracking-[-0.06em] text-[var(--text-primary)]">{project.title}</h3>
-              <p className="mt-6 max-w-md text-xl leading-snug text-[var(--text-secondary)]">{project.subtitle}</p>
-              <p className="project-description mt-5">{project.description}</p>
+            <FadeContent
+              className="h-full"
+              effect="focus"
+              blur={3}
+              duration={0.76}
+              ease="power2.out"
+              threshold={0.12}
+              initialOpacity={0.08}
+              once
+            >
+              <SpotlightCard
+                className="spotlight-card--project grid gap-8 border border-[var(--border-default)] p-5 sm:p-6 lg:grid-cols-12 lg:gap-10 lg:p-8"
+                spotlightColor="var(--text-primary)"
+                intensity={0.14}
+                spotlightSize={250}
+                softness={0.82}
+                borderGlow={0.32}
+                proximity={72}
+                smoothing={0.3}
+                flare
+                data-spotlight="project"
+              >
+                <div className="lg:col-span-5">
+                <div className="mb-6 flex items-center gap-3">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-primary)]" />
+                  <span className="label-muted">{project.badge}</span>
+                </div>
+                <h3 className="font-display text-[clamp(2.4rem,6vw,5.8rem)] font-bold uppercase leading-[0.86] tracking-[-0.06em] text-[var(--text-primary)]">{project.title}</h3>
+                <p className="mt-6 max-w-md text-xl leading-snug text-[var(--text-secondary)]">{project.subtitle}</p>
+                <p className="project-description mt-5">{project.description}</p>
 
-              <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--border-default)]">
-                {[
-                  { label: "Domain", value: project.category },
-                  { label: "Type", value: project.badge },
-                  { label: "Stack", value: project.technologies?.slice(0, 2).join(" · ") ?? "See project notes" },
-                  { label: "Status", value: project.status ?? "Documented" },
-                ].map((stat) => (
-                  <div key={stat.label} className="bg-[var(--bg-primary)] p-4">
-                    <dt className="label-muted">{stat.label}</dt>
-                    <dd className="mt-2 text-sm font-medium leading-snug text-[var(--text-primary)]">{stat.value}</dd>
-                  </div>
-                ))}
-              </dl>
+                <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--border-default)]">
+                  {[
+                    { label: "Domain", value: project.category },
+                    { label: "Type", value: project.badge },
+                    { label: "Stack", value: project.technologies?.slice(0, 2).join(" · ") ?? "See project notes" },
+                    { label: "Status", value: project.status ?? "Documented" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="bg-[var(--bg-primary)] p-4">
+                      <dt className="label-muted">{stat.label}</dt>
+                      <dd className="mt-2 text-sm font-medium leading-snug text-[var(--text-primary)]">{stat.value}</dd>
+                    </div>
+                  ))}
+                </dl>
 
-              <div className="mt-8 flex flex-wrap gap-3">
-                {project.githubUrl && (
-                  <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-primary px-6 py-3.5 text-[var(--text-label-sm)]" data-cursor-hover>
-                    <GithubIcon className="h-4 w-4" /> Source
-                  </a>
-                )}
-                {project.liveDemoUrl && (
-                  <a href={project.liveDemoUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary px-6 py-3.5 text-[var(--text-label-sm)]" data-cursor-hover>
-                    <ExternalLink className="h-4 w-4" aria-hidden="true" /> Live demo
-                  </a>
-                )}
-                <button type="button" onClick={() => setSelectedProject(project)} className="btn-outline cursor-pointer px-6 py-3.5 text-[var(--text-label-sm)]" data-cursor-project data-cursor-label="OPEN">
-                  Open case study <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
-            </div>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  {project.githubUrl && (
+                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-primary px-6 py-3.5 text-[var(--text-label-sm)]" data-cursor-hover>
+                      <GithubIcon className="h-4 w-4" /> Source
+                    </a>
+                  )}
+                  {project.liveDemoUrl && (
+                    <a href={project.liveDemoUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary px-6 py-3.5 text-[var(--text-label-sm)]" data-cursor-hover>
+                      <ExternalLink className="h-4 w-4" aria-hidden="true" /> Live demo
+                    </a>
+                  )}
+                  <button type="button" onClick={() => setSelectedProject(project)} className="btn-outline cursor-pointer px-6 py-3.5 text-[var(--text-label-sm)]" data-cursor-project data-cursor-label="OPEN">
+                    Open case study <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </div>
+                </div>
 
-            <div className="lg:col-span-7">
-              <ArchitectureDiagram project={project} />
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {project.keyHighlights.slice(0, 4).map((highlight) => (
-                  <div key={highlight} className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-4 text-sm leading-relaxed text-[var(--text-secondary)]">
-                    <span className="mt-2 h-px w-4 shrink-0 bg-[var(--text-primary)]" aria-hidden="true" />
-                    {highlight}
-                  </div>
-                ))}
-              </div>
-            </div>
+                <div className="lg:col-span-7">
+                <ArchitectureDiagram project={project} />
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {project.keyHighlights.slice(0, 4).map((highlight) => (
+                    <div key={highlight} className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-4 text-sm leading-relaxed text-[var(--text-secondary)]">
+                      <span className="mt-2 h-px w-4 shrink-0 bg-[var(--text-primary)]" aria-hidden="true" />
+                      {highlight}
+                    </div>
+                  ))}
+                </div>
+                </div>
+              </SpotlightCard>
+            </FadeContent>
           </motion.div>
         </AnimatePresence>
 

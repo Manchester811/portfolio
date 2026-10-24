@@ -3,6 +3,7 @@ import { Space_Grotesk, Manrope, Geist_Mono } from "next/font/google";
 import { personalConfig, siteConfig } from "@/data/config";
 import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
+import "@/components/reactbits/SpotlightCard.css";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
