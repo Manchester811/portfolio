@@ -3,7 +3,7 @@ import React from "react";
 export function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
     <svg
-      role="img"
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="currentColor"
       className={className}
@@ -17,7 +17,7 @@ export function GithubIcon({ className = "w-4 h-4" }: { className?: string }) {
 export function LinkedinIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
     <svg
-      role="img"
+      aria-hidden="true"
       viewBox="0 0 24 24"
       fill="currentColor"
       className={className}

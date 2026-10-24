@@ -17,31 +17,47 @@
 :root {
   /* ─── Color System: Black, Grey, White Only ─── */
   /* Backgrounds */
-  --bg-primary: #030303;
-  --bg-secondary: #080808;
-  --bg-tertiary: #0E0E10;
-  --bg-card: #141416;
-  --bg-card-hover: #1A1A1D;
-  --bg-card-active: #222226;
+  --bg-primary: #070707;
+  --bg-secondary: #0B0B0B;
+  --bg-tertiary: #101010;
+  --bg-card: #151515;
+  --bg-card-hover: #1C1C1C;
+  --bg-card-active: #252525;
 
   /* Borders — Thin Grey Lines (rgba 0.10–0.16 as specified) */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.12);
-  --border-hover: rgba(255, 255, 255, 0.16);
-  --border-strong: rgba(255, 255, 255, 0.20);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-default: rgba(255, 255, 255, 0.14);
+  --border-hover: rgba(255, 255, 255, 0.22);
+  --border-strong: rgba(255, 255, 255, 0.30);
 
   /* Text */
-  --text-primary: #FAFAFA;
-  --text-secondary: #B8B8B8;
-  --text-muted: #787878;
-  --text-dim: #505050;
+  --text-primary: #F4F4F2;
+  --text-secondary: #BDBDBA;
+  /*
+   * Contrast (WCAG AA needs 4.5:1 for body-size text) measured against the
+   * darkest surface each one is used on:
+   *   --text-muted #8A8A8A -> 5.3:1 on --bg-card, 5.8:1 on --bg-secondary
+   *   --text-dim  #7D7D7D -> 4.5:1 on --bg-card, 4.9:1 on --bg-secondary
+   * The previous #787878 / #505050 failed on card backgrounds.
+   */
+  --text-muted: #858582;
+  --text-dim: #686866;
 
   /* Accent — Neutral White/Grey only */
   --accent-primary: #FFFFFF;
   --accent-primary-hover: #E8E8E8;
-  --accent-muted: rgba(255, 255, 255, 0.1);
-  --accent-glow: rgba(255, 255, 255, 0.04);
-  --accent-glow-strong: rgba(255, 255, 255, 0.1);
+  --accent-muted: rgba(255, 255, 255, 0.09);
+  --accent-primary-muted: rgba(255, 255, 255, 0.13);
+  --accent-glow: rgba(255, 255, 255, 0.055);
+  --accent-glow-strong: rgba(255, 255, 255, 0.14);
+
+  /*
+   * Accent aliases. These were referenced in 20+ places (ProjectDossier, Badge,
+   * CommandPalette) but never defined, so every `color: var(--text-accent)`
+   * silently fell back to `inherit` and the contrast was accidental.
+   */
+  --text-accent: #FFFFFF;
+  --border-accent: rgba(255, 255, 255, 0.24);
 
   /* ─── Typography Scale ─── */
   /* Display / Hero */
@@ -51,14 +67,14 @@
   --text-subheading: clamp(1.35rem, 3.2vw, 2.75rem);
 
   /* Body */
-  --text-body-lg: clamp(1.15rem, 1.7vw, 1.5rem);
-  --text-body: clamp(1.05rem, 1.3vw, 1.3rem);
-  --text-body-sm: clamp(0.95rem, 1.1vw, 1.1rem);
+  --text-body-lg: clamp(1.25rem, 2vw, 1.65rem);
+  --text-body: clamp(1.125rem, 1.5vw, 1.45rem);
+  --text-body-sm: clamp(1rem, 1.2vw, 1.2rem);
 
   /* Labels / UI */
-  --text-label: 14px;
-  --text-label-sm: 12px;
-  --text-micro: 11px;
+  --text-label: 15px;
+  --text-label-sm: 13px;
+  --text-micro: 12px;
 
   /* ─── Spacing Scale ─── */
   --space-xs: 4px;
@@ -72,11 +88,11 @@
   --space-5xl: 128px;
 
   /* ─── Radius — Rounded/Curved Containers ─── */
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
-  --radius-2xl: 48px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-2xl: 30px;
   --radius-full: 9999px;
 
   /* ─── Motion ─── */
@@ -95,8 +111,8 @@
   --grid-gutter: clamp(20px, 3.5vw, 40px);
 
   /* ─── Section Container ─── */
-  --section-radius: 48px;
-  --section-padding: clamp(48px, 8vw, 96px);
+  --section-radius: 28px;
+  --section-padding: clamp(32px, 5vw, 72px);
 }
 
 @theme {
@@ -104,37 +120,37 @@
   --font-sans: var(--font-sans), "Manrope", system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, monospace;
 
-  --color-bg-primary: #030303;
-  --color-bg-secondary: #080808;
-  --color-bg-tertiary: #0E0E10;
-  --color-bg-card: #141416;
-  --color-bg-card-hover: #1A1A1D;
-  --color-bg-card-active: #222226;
+  --color-bg-primary: #070707;
+  --color-bg-secondary: #0B0B0B;
+  --color-bg-tertiary: #101010;
+  --color-bg-card: #151515;
+  --color-bg-card-hover: #1C1C1C;
+  --color-bg-card-active: #252525;
 
-  --color-border-subtle: rgba(255, 255, 255, 0.08);
-  --color-border-default: rgba(255, 255, 255, 0.12);
-  --color-border-hover: rgba(255, 255, 255, 0.18);
-  --color-border-strong: rgba(255, 255, 255, 0.24);
+  --color-border-subtle: rgba(255, 255, 255, 0.07);
+  --color-border-default: rgba(255, 255, 255, 0.14);
+  --color-border-hover: rgba(255, 255, 255, 0.22);
+  --color-border-strong: rgba(255, 255, 255, 0.30);
 
   --color-accent: #FFFFFF;
   --color-accent-hover: #E8E8E8;
   --color-accent-muted: rgba(255, 255, 255, 0.1);
 
-  --color-text-primary: #FAFAFA;
-  --color-text-secondary: #B8B8B8;
-  --color-text-muted: #787878;
-  --color-text-dim: #505050;
+  --color-text-primary: #F4F4F2;
+  --color-text-secondary: #BDBDBA;
+  --color-text-muted: #858582;
+  --color-text-dim: #686866;
 
   --text-hero: clamp(3.5rem, 10vw, 12rem);
   --text-display: clamp(2.5rem, 7vw, 8rem);
   --text-heading: clamp(2rem, 4.5vw, 4rem);
   --text-subheading: clamp(1.35rem, 3.2vw, 2.75rem);
-  --text-body-lg: clamp(1.15rem, 1.7vw, 1.5rem);
-  --text-body: clamp(1.05rem, 1.3vw, 1.3rem);
-  --text-body-sm: clamp(0.95rem, 1.1vw, 1.1rem);
-  --text-label: 14px;
-  --text-label-sm: 12px;
-  --text-micro: 11px;
+  --text-body-lg: clamp(1.25rem, 2vw, 1.65rem);
+  --text-body: clamp(1.125rem, 1.5vw, 1.45rem);
+  --text-body-sm: clamp(1rem, 1.2vw, 1.2rem);
+  --text-label: 15px;
+  --text-label-sm: 13px;
+  --text-micro: 12px;
 
   --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -208,8 +224,8 @@ body::before {
   pointer-events: none;
   z-index: 0;
   background-image:
-    radial-gradient(ellipse at 80% 10%, var(--accent-glow) 0%, transparent 50%),
-    radial-gradient(ellipse at 10% 90%, var(--accent-glow) 0%, transparent 50%);
+    radial-gradient(ellipse at 82% 8%, rgba(255,255,255,0.09) 0%, transparent 42%),
+    radial-gradient(ellipse at 8% 58%, rgba(255,255,255,0.035) 0%, transparent 46%);
   opacity: 1;
 }
 
@@ -220,12 +236,12 @@ body::after {
   pointer-events: none;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-  background-size: 100px 100px;
-  opacity: 0.3;
-  -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
-  mask-image: radial-gradient(ellipse at center, black 40%, transparent 70%);
+    linear-gradient(rgba(255,255,255,.026) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.026) 1px, transparent 1px);
+  background-size: 88px 88px;
+  opacity: 0.42;
+  -webkit-mask-image: radial-gradient(ellipse at center, black 34%, transparent 78%);
+  mask-image: radial-gradient(ellipse at center, black 34%, transparent 78%);
 }
 
 /* ─── Vignette overlay ─── */
@@ -241,15 +257,17 @@ body::after {
 /* Distinct floating panels with clear separation, matching the reference. */
 .section-container {
   border-radius: var(--section-radius);
-  background: var(--bg-secondary);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.028), transparent 24%),
+    var(--bg-secondary);
   border: 1px solid var(--border-default);
   padding: var(--section-padding);
   position: relative;
   z-index: 10;
   box-shadow:
     0 0 0 1px var(--border-subtle),
-    0 32px 100px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 24px 80px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
 }
 
 .section-container::before {
@@ -257,7 +275,7 @@ body::after {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255,255,255,.03) 0%, transparent 50%);
+  background: linear-gradient(180deg, rgba(255,255,255,.035) 0%, transparent 42%);
   pointer-events: none;
 }
 
@@ -272,7 +290,9 @@ body::after {
 /* ─── Card utility ─── */
 .card,
 .card-interactive {
-  background: var(--bg-card);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.025), transparent 48%),
+    var(--bg-card);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   transition:
@@ -282,7 +302,9 @@ body::after {
 }
 
 .card:hover {
-  background: var(--bg-card-hover);
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.045), transparent 48%),
+    var(--bg-card-hover);
   border-color: var(--border-hover);
 }
 
@@ -333,16 +355,16 @@ body::after {
 }
 
 .btn-primary {
-  background: var(--text-primary);
+  background: linear-gradient(180deg, #FAFAF8 0%, #E7E7E4 100%);
   color: var(--bg-primary);
   border: 1px solid transparent;
-  box-shadow: 0 4px 24px var(--accent-glow-strong);
+  box-shadow: 0 8px 28px rgba(255, 255, 255, 0.09);
 }
 
 .btn-primary:hover {
-  background: var(--accent-primary-hover);
+  background: linear-gradient(180deg, #FFFFFF 0%, #EDEDE9 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px var(--accent-glow-strong);
+  box-shadow: 0 12px 36px rgba(255, 255, 255, 0.13);
 }
 
 .btn-primary:active {
@@ -350,13 +372,14 @@ body::after {
 }
 
 .btn-secondary {
-  background: var(--bg-card);
+  background: linear-gradient(180deg, #1B1B1B 0%, #111111 100%);
   color: var(--text-primary);
   border: 1px solid var(--border-default);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.045);
 }
 
 .btn-secondary:hover {
-  background: var(--bg-card-hover);
+  background: linear-gradient(180deg, #242424 0%, #161616 100%);
   border-color: var(--border-hover);
   color: var(--text-primary);
 }
@@ -368,7 +391,7 @@ body::after {
 }
 
 .btn-outline:hover {
-  background: var(--accent-muted);
+  background: rgba(255, 255, 255, 0.08);
   border-color: var(--text-primary);
 }
 
@@ -379,7 +402,7 @@ body::after {
 }
 
 .btn-ghost:hover {
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-primary);
 }
 
@@ -436,6 +459,28 @@ body::after {
 .focus-ring:focus-visible {
   outline: 2px solid var(--text-primary);
   outline-offset: 2px;
+}
+
+/*
+ * ─── Global keyboard focus indicator ───
+ * Many controls here rely on hover-only styling, which leaves keyboard users
+ * with no visible focus. This rule guarantees a high-contrast ring on keyboard
+ * focus for every interactive element. `:focus-visible` means it never shows
+ * for mouse clicks, so the visual design is untouched.
+ *
+ * It also beats Tailwind's `.outline-none` on inputs (element + pseudo-class
+ * outranks a single class), which previously left the contact fields with only
+ * a subtle border-colour change as their focus cue.
+ */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 3px;
 }
 
 /* ─── Utility classes ─── */
@@ -633,7 +678,7 @@ body::after {
 }
 
 .chip {
-  background: var(--bg-card);
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), transparent), var(--bg-card);
   border: 1px solid var(--border-default);
   color: var(--text-secondary);
 }
@@ -644,7 +689,7 @@ body::after {
 }
 
 .chip-accent {
-  background: var(--accent-muted);
+  background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
   border: 1px solid var(--border-strong);
   color: var(--text-primary);
 }
@@ -666,7 +711,7 @@ body::after {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1px;
-  border-radius: var(--radius-lg);
+  border-radius: 18px;
   border: 1px solid var(--border-default);
   background: var(--border-default);
   overflow: hidden;
@@ -679,7 +724,7 @@ body::after {
 }
 
 .stat-item {
-  background: var(--bg-primary);
+  background: linear-gradient(145deg, rgba(255,255,255,0.018), transparent 55%), var(--bg-primary);
   padding: clamp(20px, 4vw, 32px);
   border-right: 1px solid var(--border-default);
 }
@@ -713,12 +758,53 @@ body::after {
   color: var(--text-secondary);
 }
 
+/*
+ * Compact 2x2 variant for the hero's right-hand panel (3 of 12 columns).
+ * These rules are top-level (not scoped to a media query) and are declared
+ * after the base .stats-grid rules above, so at equal specificity they win
+ * and the panel stays 2x2 on desktop instead of stretching to 4 across.
+ * The hairline separators come from the parent's 1px gap over a
+ * border-coloured background, so the per-item right border is dropped.
+ */
+.stats-grid-2x2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.stats-grid-2x2 .stat-item {
+  border-right: none;
+  padding: clamp(14px, 1.5vw, 20px);
+}
+
+.stats-grid-2x2 .stat-value {
+  margin-top: 8px;
+  font-size: clamp(1.125rem, 1.7vw, 1.625rem);
+}
+
+.stats-grid-2x2 .stat-label {
+  letter-spacing: 0.14em;
+}
+
+.stats-grid-2x2 .stat-subtext {
+  margin-top: 4px;
+  font-size: var(--text-micro);
+}
+
 /* ─── Project Card ─── */
 .project-card {
-  border-radius: var(--radius-xl);
+  border-radius: 22px;
   overflow: hidden;
   border: 1px solid var(--border-default);
-  background: var(--bg-secondary);
+  background: linear-gradient(145deg, rgba(255,255,255,0.025), transparent 40%), var(--bg-secondary);
+  /*
+   * A <button> is inline-block by default, so its width was shrink-to-fit and
+   * the `w-full` aspect-ratio child inside it resolved against a width of 0 —
+   * collapsing the whole screenshot area to a 2px sliver. Forcing a block-level,
+   * full-width box is what makes the image column actually render.
+   */
+  display: block;
+  width: 100%;
+  padding: 0;
+  text-align: left;
   transition:
     border-color var(--duration-normal) var(--ease-out),
     box-shadow var(--duration-normal) var(--ease-out);
@@ -726,7 +812,7 @@ body::after {
 
 .project-card:hover {
   border-color: var(--border-strong);
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.62);
 }
 
 .project-image {
@@ -752,7 +838,7 @@ body::after {
   width: 100%;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-default);
-  background: var(--bg-card);
+  background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent 80%), var(--bg-card);
   padding: 14px 18px;
   font-size: var(--text-body-sm);
   color: var(--text-primary);
@@ -781,7 +867,7 @@ body::after {
 
 /* ─── Glass / Navbar utility ─── */
 .glass-pill {
-  background: rgba(3, 3, 3, 0.65);
+  background: rgba(11, 11, 11, 0.74);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--border-default);
@@ -792,7 +878,7 @@ body::after {
 
 .glass-pill:hover,
 .glass-pill[data-scrolled="true"] {
-  background: rgba(3, 3, 3, 0.8);
+  background: rgba(11, 11, 11, 0.88);
   border-color: var(--border-hover);
   box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.5),
@@ -806,6 +892,55 @@ body::after {
   border-radius: inherit;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, transparent 50%);
   pointer-events: none;
+}
+
+/* ─── Stack marquee ─────────────────────────────────────────────────────── */
+.tech-marquee__viewport {
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.tech-marquee__track {
+  display: flex;
+  width: max-content;
+  min-width: 200%;
+  align-items: center;
+  gap: 12px;
+  will-change: transform;
+}
+
+.tech-marquee__viewport:hover .tech-marquee__track,
+.is-paused .tech-marquee__track {
+  animation-play-state: paused;
+}
+
+.tech-marquee__item {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.025);
+  padding: 0 18px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tech-marquee__item:nth-child(3n) {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tech-marquee__track {
+    transform: none !important;
+  }
 }
 
 /* ─── Hero scrim utilities ─── */

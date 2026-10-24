@@ -18,7 +18,7 @@ export const CertificationsLanguages: React.FC = () => {
             SECTION HEADER
         ===================================================== */}
 
-        <div className="mb-14 border-b border-[var(--border-default)] pb-10 md:mb-16">
+        <div className="mb-10 border-b border-[var(--border-default)] pb-6">
           <motion.span
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -26,7 +26,7 @@ export const CertificationsLanguages: React.FC = () => {
             transition={{ duration: 0.6, ease }}
             className="label mb-5 block"
           >
-            05 / Credentials
+             06 / Credentials
           </motion.span>
 
           <motion.h2
@@ -42,10 +42,10 @@ export const CertificationsLanguages: React.FC = () => {
         </div>
 
         {/* =====================================================
-            CERTIFICATIONS — compact rows
+            CERTIFICATIONS — four compact cards in one horizontal row
         ===================================================== */}
 
-        <div className="border-t border-[var(--border-default)]">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {certificationsData.map((cert, index) => (
             <motion.article
               key={cert.id}
@@ -53,26 +53,37 @@ export const CertificationsLanguages: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-70px" }}
               transition={{ duration: 0.65, delay: 0.04 * index, ease }}
-              className="group grid grid-cols-1 items-center gap-4 border-b border-[var(--border-subtle)] py-6 transition-colors duration-500 hover:bg-[rgba(255,255,255,0.015)] md:grid-cols-12 md:gap-6"
+              className="group flex flex-col gap-4 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-card)] p-5 transition-colors duration-500 hover:border-[var(--border-hover)]"
             >
               {/* name + issuer */}
-              <div className="flex items-start gap-4 md:col-span-8">
-                <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-[var(--text-primary)]" />
-                <div>
-                  <h3 className="text-[var(--text-body)] font-semibold leading-snug text-[var(--text-primary)]">
-                    {cert.name}
-                  </h3>
-                  <p className="body-text-sm mt-1.5">{cert.issuer}</p>
-                </div>
+              <div className="flex items-start gap-3">
+                <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-[var(--text-primary)]" aria-hidden="true" />
+                <h3 className="text-[var(--text-body-sm)] font-semibold leading-snug text-[var(--text-primary)]">
+                  {cert.name}
+                </h3>
               </div>
 
-              {/* date + credential id */}
-              <div className="flex flex-col items-start gap-1 md:col-span-4 md:items-end">
+              <p className="body-text-sm mt-auto">{cert.issuer}</p>
+
+              {/* date + credential id + verification link */}
+              <div className="flex flex-col items-start gap-1.5">
                 <span className="meta-text">{cert.issueDate}</span>
                 {cert.credentialId && (
-                  <span className="font-mono text-[var(--text-micro)] tracking-[0.05em] text-[var(--text-dim)]">
+                  <span className="break-all font-mono text-[var(--text-micro)] leading-[1.5] tracking-[0.05em] text-[var(--text-dim)]">
                     ID: {cert.credentialId}
                   </span>
+                )}
+                {cert.verificationUrl && (
+                  <a
+                    href={cert.verificationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Verify ${cert.name} — opens in a new tab`}
+                    data-cursor-hover
+                    className="link-primary inline-flex items-center gap-1 font-mono text-[var(--text-micro)] tracking-[0.08em] text-[var(--text-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors duration-300 hover:decoration-[var(--text-primary)]"
+                  >
+                    Verify <span aria-hidden="true">↗</span>
+                  </a>
                 )}
               </div>
             </motion.article>

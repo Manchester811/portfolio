@@ -16,19 +16,52 @@ interface ProjectDossierProps {
 export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose }) => {
   const shouldReduceMotion = useReducedMotion();
   const isOpenRef = useRef(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (project) {
       isOpenRef.current = true;
+      previousFocus.current = document.activeElement as HTMLElement | null;
       document.body.style.overflow = "hidden";
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        "button, a[href], input, textarea, select, [tabindex]:not([tabindex='-1'])"
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
 
     if (project) {
       window.addEventListener("keydown", handleKeyDown);
+      const focusTimer = window.setTimeout(() => {
+        dialogRef.current?.querySelector<HTMLElement>("button, a[href]")?.focus();
+      }, 0);
+
+      return () => {
+        window.clearTimeout(focusTimer);
+        if (isOpenRef.current) {
+          document.body.style.overflow = "unset";
+          isOpenRef.current = false;
+        }
+        previousFocus.current?.focus();
+        window.removeEventListener("keydown", handleKeyDown);
+      };
     }
 
     return () => {
@@ -36,6 +69,7 @@ export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose
         document.body.style.overflow = "unset";
         isOpenRef.current = false;
       }
+      previousFocus.current?.focus();
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [project, onClose]);
@@ -73,6 +107,7 @@ export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose
               y: shouldReduceMotion ? 0 : 12,
             }}
             transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            ref={dialogRef}
             className="relative z-10 my-8 w-full max-w-4xl overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--bg-card)] shadow-[0_24px_80px_rgba(0,0,0,0.85)]"
           >
             {/* Ribbon */}
@@ -111,9 +146,11 @@ export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose
                   className="object-cover"
                 />
               ) : (
+                // TODO(you): same as the card — add `image` in
+                // data/projects.ts once a preview asset exists.
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[linear-gradient(135deg,var(--bg-card)_0%,var(--bg-primary)_100%)]">
                   <span className="font-mono text-[var(--text-micro)] uppercase tracking-[0.3em] text-[var(--text-dim)]">
-                    No Preview
+                    Preview Coming Soon
                   </span>
                   <span className="font-display text-3xl font-bold uppercase tracking-[-0.03em] text-[var(--text-secondary)]">
                     {project.title}
@@ -153,55 +190,57 @@ export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose
               </div>
 
               {/* Architecture */}
-              <div className="space-y-4 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
-                <div className="flex items-center gap-2 font-mono text-[var(--text-micro)] font-semibold uppercase tracking-[0.2em] text-[var(--text-accent)]">
-                  <Cpu className="h-4 w-4" />
-                  <span>Architecture &amp; System Specs</span>
-                </div>
+              {project.architectureDetails && (
+                <div className="space-y-4 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--bg-primary)] p-5">
+                  <div className="flex items-center gap-2 font-mono text-[var(--text-micro)] font-semibold uppercase tracking-[0.2em] text-[var(--text-accent)]">
+                    <Cpu className="h-4 w-4" />
+                    <span>Architecture &amp; System Specs</span>
+                  </div>
 
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {[
-                    {
-                      label: "Model / Core Engine",
-                      value: project.architectureDetails.modelType,
-                      accent: false,
-                    },
-                    {
-                      label: "Input / Dataset",
-                      value: project.architectureDetails.datasetOrInput,
-                      accent: false,
-                    },
-                    {
-                      label: "Benchmark Metrics",
-                      value: project.architectureDetails.metrics,
-                      accent: true,
-                    },
-                    {
-                      label: "Backend Pipeline",
-                      value: project.architectureDetails.backendStack,
-                      accent: false,
-                    },
-                  ].map((spec) => (
-                    <div
-                      key={spec.label}
-                      className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-4"
-                    >
-                      <span className="mb-1.5 block font-mono text-[var(--text-micro)] uppercase tracking-[0.15em] text-[var(--text-muted)]">
-                        {spec.label}
-                      </span>
-                      <span
-                        className={`text-sm font-semibold ${
-                          spec.accent
-                            ? "text-[var(--text-accent)]"
-                            : "text-[var(--text-primary)]"
-                        }`}
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    {[
+                      {
+                        label: "Model / Core Engine",
+                        value: project.architectureDetails.modelType,
+                        accent: false,
+                      },
+                      {
+                        label: "Input / Dataset",
+                        value: project.architectureDetails.datasetOrInput,
+                        accent: false,
+                      },
+                      {
+                        label: "Benchmark Metrics",
+                        value: project.architectureDetails.metrics,
+                        accent: true,
+                      },
+                      {
+                        label: "Backend Pipeline",
+                        value: project.architectureDetails.backendStack,
+                        accent: false,
+                      },
+                    ].map((spec) => (
+                      <div
+                        key={spec.label}
+                        className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-4"
                       >
-                        {spec.value}
-                      </span>
-                    </div>
-                  ))}
+                        <span className="mb-1.5 block font-mono text-[var(--text-micro)] uppercase tracking-[0.15em] text-[var(--text-muted)]">
+                          {spec.label}
+                        </span>
+                        <span
+                          className={`text-sm font-semibold ${
+                            spec.accent
+                              ? "text-[var(--text-accent)]"
+                              : "text-[var(--text-primary)]"
+                          }`}
+                        >
+                          {spec.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Highlights */}
               <div>
@@ -223,18 +262,20 @@ export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose
               </div>
 
               {/* Stack */}
-              <div>
-                <span className="mb-3 block font-mono text-[var(--text-micro)] uppercase tracking-[0.2em] text-[var(--text-muted)]">
-                  Technology Stack
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies.map((tech) => (
-                    <Badge key={tech} variant="cyan" size="sm">
-                      {tech}
-                    </Badge>
-                  ))}
+              {project.technologies && project.technologies.length > 0 && (
+                <div>
+                  <span className="mb-3 block font-mono text-[var(--text-micro)] uppercase tracking-[0.2em] text-[var(--text-muted)]">
+                    Technology Stack
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((tech) => (
+                      <Badge key={tech} variant="cyan" size="sm">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Links */}
               <div className="flex flex-wrap items-center gap-3 border-t border-[var(--border-subtle)] pt-6">

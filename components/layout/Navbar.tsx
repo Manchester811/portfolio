@@ -13,9 +13,11 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: "hero", label: "Home" },
   { id: "projects", label: "Work" },
   { id: "about", label: "About" },
+  { id: "skills", label: "Stack" },
+  { id: "experience", label: "Trajectory" },
+  { id: "certifications", label: "Credentials" },
   { id: "contact", label: "Contact" },
 ];
 
@@ -24,6 +26,11 @@ export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { scrollTo } = useSmoothScroll();
+
+  const openContact = useCallback(() => {
+    setMobileMenuOpen(false);
+    window.dispatchEvent(new CustomEvent("open-contact-modal"));
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 24);
@@ -44,7 +51,7 @@ export const Navbar: React.FC = () => {
       { rootMargin: "-40% 0px -55% 0px", threshold: 0 }
     );
 
-    navItems.forEach((item) => {
+    [{ id: "hero" }, ...navItems].forEach((item) => {
       const el = document.getElementById(item.id);
       if (el) observer.observe(el);
     });
@@ -87,7 +94,7 @@ export const Navbar: React.FC = () => {
               onClick={() => handleNavClick("hero")}
               className="relative z-10 flex shrink-0 cursor-pointer items-center gap-2.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)]"
               data-cursor-hover
-              aria-label="Rishabh Jain — back to top"
+              title="Rishabh Jain — back to top"
             >
               <span className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-[var(--border-default)] bg-[var(--bg-card)]">
                 <span className="flex h-9 w-9 items-center justify-center bg-gradient-to-br from-[var(--text-primary)] to-[var(--text-secondary)]">
@@ -102,11 +109,11 @@ export const Navbar: React.FC = () => {
             </button>
 
             {/* Subtle divider */}
-            <div className="hidden h-5 w-px shrink-0 bg-[var(--border-default)] md:block" />
+            <div className="hidden h-5 w-px shrink-0 bg-[var(--border-default)] lg:block" />
 
             {/* Desktop navigation links */}
             <div
-              className="hidden flex-1 items-center justify-center gap-1 md:flex"
+              className="hidden flex-1 items-center justify-center gap-1 lg:flex"
               role="navigation"
               aria-label="Primary"
             >
@@ -148,22 +155,21 @@ export const Navbar: React.FC = () => {
                 <Search className="h-4 w-4" />
               </button>
 
-              {/* Resume button */}
-              <a
-                href={personalData.resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden h-9 cursor-pointer items-center gap-1.5 rounded-full bg-[var(--text-primary)] px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[var(--bg-primary)] transition-all duration-300 hover:bg-[var(--accent-primary-hover)] md:flex"
+              {/* Primary contact CTA */}
+              <button
+                type="button"
+                onClick={openContact}
+                className="hidden h-9 cursor-pointer items-center gap-1.5 rounded-full bg-[var(--text-primary)] px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[var(--bg-primary)] transition-all duration-300 hover:bg-[var(--accent-primary-hover)] lg:flex"
                 data-cursor-hover
               >
-                <span>Résumé</span>
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </a>
+                <span>Hire me</span>
+                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
 
               {/* Mobile hamburger */}
               <button
                 onClick={() => setMobileMenuOpen((v) => !v)}
-                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--bg-card)] text-[var(--text-primary)] transition-all duration-300 hover:border-[var(--border-strong)] md:hidden"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--bg-card)] text-[var(--text-primary)] transition-all duration-300 hover:border-[var(--border-strong)] lg:hidden"
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileMenuOpen}
                 data-cursor-hover
@@ -187,7 +193,7 @@ export const Navbar: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 flex flex-col justify-between bg-[var(--bg-primary)]/95 px-6 pb-10 pt-28 backdrop-blur-xl md:hidden"
+            className="fixed inset-0 z-40 flex flex-col justify-between bg-[var(--bg-primary)]/95 px-6 pb-10 pt-28 backdrop-blur-xl lg:hidden"
           >
             <nav className="flex flex-col" aria-label="Mobile">
               {navItems.map((item, i) => (
@@ -220,14 +226,18 @@ export const Navbar: React.FC = () => {
               transition={{ delay: 0.36, duration: 0.5 }}
               className="flex flex-col gap-3"
             >
+              <button type="button" onClick={openContact} className="btn-primary w-full cursor-pointer py-4 text-[var(--text-label-sm)]">
+                <span>Start a conversation</span>
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </button>
               <a
                 href={personalData.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-primary w-full py-4 text-[var(--text-label-sm)]"
+                className="btn-secondary w-full py-4 text-[var(--text-label-sm)]"
               >
                 <span>Download Résumé</span>
-                <ArrowUpRight className="h-4 w-4" />
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
               </a>
               <a
                 href={personalData.github}
