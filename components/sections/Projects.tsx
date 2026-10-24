@@ -1,230 +1,129 @@
 "use client";
 
-import React, { useState } from "react";
-import Image from "next/image";
-import { projectsData, ProjectItem } from "@/data/projects";
+import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowUpRight, ExternalLink } from "lucide-react";
+import { GithubIcon } from "@/components/ui/Icons";
+import { projectsData, type ProjectItem } from "@/data/projects";
+import { ArchitectureDiagram } from "@/components/ui/ArchitectureDiagram";
 import { ProjectDossier } from "@/components/ui/ProjectDossier";
 import { MotionSection } from "@/components/ui/MotionSection";
-import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
-import { GithubIcon } from "@/components/ui/Icons";
 
-const ease = [0.16, 1, 0.3, 1] as const;
-
-export const Projects: React.FC = () => {
+export function Projects() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const shouldReduceMotion = useReducedMotion();
+  const project = projectsData[selectedIndex] ?? projectsData[0];
 
-  const projects = projectsData.map((project, index) => ({
-    project,
-    number: String(index + 1).padStart(2, "0"),
-    imageSide: index % 2 === 0 ? ("right" as const) : ("left" as const),
-  }));
+  if (!project) return null;
 
   return (
     <MotionSection id="projects" className="py-0">
       <section className="section-container">
-        {/* =====================================================
-            SECTION HEADER
-        ===================================================== */}
-
-        <div className="mb-14 flex flex-col gap-6 border-b border-[var(--border-default)] pb-10 md:mb-20 md:flex-row md:items-end md:justify-between">
+        <div className="mb-10 flex flex-col gap-6 border-b border-[var(--border-default)] pb-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <motion.span
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.6, ease }}
-              className="label mb-4 block"
-            >
-              01 / Selected Work
-            </motion.span>
-
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.8, delay: 0.05, ease }}
-              className="heading-display max-w-3xl text-[var(--text-primary)]"
-            >
-              Selected Work
-            </motion.h2>
+            <span className="label block">01 / Work</span>
+            <h2 className="heading-display mt-5 text-[var(--text-primary)]">Selected <span className="text-[var(--text-muted)]">systems.</span></h2>
           </div>
+          <a href="https://github.com/Manchester811" target="_blank" rel="noopener noreferrer" className="link-primary inline-flex items-center gap-2 font-mono text-[var(--text-label-sm)] uppercase tracking-[0.18em]" data-cursor-hover>
+            GitHub <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+        </div>
 
-          <motion.a
-            href="https://github.com/Manchester811"
-            target="_blank"
-            rel="noopener noreferrer"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.7, delay: 0.12, ease }}
-            className="link-primary group inline-flex shrink-0 items-center gap-2 font-mono text-[var(--text-label-sm)] uppercase tracking-[0.18em]"
-            data-cursor-hover
+        <div className="mb-8 overflow-x-auto pb-2" role="tablist" aria-label="Selected projects">
+          <div className="flex min-w-max gap-2">
+            {projectsData.map((item, index) => {
+              const active = index === selectedIndex;
+              return (
+                <button
+                  key={item.id}
+                  id={`project-tab-${item.id}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  aria-controls={`project-panel-${item.id}`}
+                  onClick={() => setSelectedIndex(index)}
+                  className={`group inline-flex cursor-pointer items-center gap-3 rounded-full border px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-all duration-300 focus-visible:outline-none ${active ? "border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg-primary)]" : "border-[var(--border-default)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"}`}
+                  data-cursor-hover
+                >
+                  <span className={active ? "text-[var(--bg-primary)]/60" : "text-[var(--text-dim)]"}>{String(index + 1).padStart(2, "0")}</span>
+                  {item.title}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={project.id}
+            id={`project-panel-${project.id}`}
+            role="tabpanel"
+            aria-labelledby={`project-tab-${project.id}`}
+            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 18, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: -12, filter: "blur(8px)" }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] }}
+            className="grid gap-8 lg:grid-cols-12 lg:gap-10"
           >
-            <span>View GitHub</span>
-            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </motion.a>
-        </div>
+            <div className="lg:col-span-5">
+              <div className="mb-6 flex items-center gap-3">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-primary)]" />
+                <span className="label-muted">{project.badge}</span>
+              </div>
+              <h3 className="font-display text-[clamp(2.4rem,6vw,5.8rem)] font-bold uppercase leading-[0.86] tracking-[-0.06em] text-[var(--text-primary)]">{project.title}</h3>
+              <p className="mt-6 max-w-md text-xl leading-snug text-[var(--text-secondary)]">{project.subtitle}</p>
+              <p className="project-description mt-5">{project.description}</p>
 
-        {/* =====================================================
-            PROJECT PRESENTATIONS — asymmetric, no identical cards
-        ===================================================== */}
-
-        <div className="flex flex-col gap-24 sm:gap-32 lg:gap-40">
-          {projects.map(({ project, number, imageSide }, index) => {
-            const textCol = "lg:col-span-5";
-            const imageCol = "lg:col-span-7";
-
-            return (
-              <motion.article
-                key={project.id}
-                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: shouldReduceMotion ? 0.4 : 0.9, ease }}
-                className="group grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12"
-              >
-                {/* ---------- TEXT COLUMN ---------- */}
-                <div
-                  className={`${textCol} ${imageSide === "left" ? "lg:order-2" : "lg:order-1"}`}
-                >
-                  {/* number + category */}
-                  <div className="mb-6 flex items-center gap-4">
-                    <span className="font-mono text-[var(--text-micro)] uppercase tracking-[0.25em] text-[var(--text-primary)]">
-                      {number}
-                    </span>
-                    <span className="h-px w-8 bg-[var(--border-default)]" />
-                    <span className="font-mono text-[var(--text-micro)] uppercase tracking-[0.25em] text-[var(--text-muted)]">
-                      {project.badge}
-                    </span>
+              <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--border-default)]">
+                {[
+                  { label: "Domain", value: project.category },
+                  { label: "Type", value: project.badge },
+                  { label: "Stack", value: project.technologies?.slice(0, 2).join(" · ") ?? "See project notes" },
+                  { label: "Status", value: project.status ?? "Documented" },
+                ].map((stat) => (
+                  <div key={stat.label} className="bg-[var(--bg-primary)] p-4">
+                    <dt className="label-muted">{stat.label}</dt>
+                    <dd className="mt-2 text-sm font-medium leading-snug text-[var(--text-primary)]">{stat.value}</dd>
                   </div>
+                ))}
+              </dl>
 
-                  {/* title — allow natural wrapping for long titles */}
-                  <h3 className="font-display text-[clamp(2rem,4vw,3.75rem)] font-bold uppercase leading-[1.02] tracking-[-0.03em] text-[var(--text-primary)] transition-transform duration-500 ease-out group-hover:translate-x-1.5 text-wrap balance">
-                    {project.title}
-                  </h3>
-
-                  {/* subtitle */}
-                  <p className="mt-4 text-[var(--text-body)] font-medium text-[var(--text-secondary)]">
-                    {project.subtitle}
-                  </p>
-
-                  {/* description — improved readability */}
-                  <p className="project-description mt-5">
-                    {project.description}
-                  </p>
-
-                  {/* technologies */}
-                  <div className="mt-7 flex flex-wrap gap-2">
-                    {project.technologies.map((tech) => (
-                      <span key={tech} className="chip">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* cta — prominent */}
-                  <button
-                    onClick={() => setSelectedProject(project)}
-                    className="btn-primary group/cta mt-10 inline-flex cursor-pointer items-center gap-3 px-8 py-4 text-[var(--text-label-sm)]"
-                    data-cursor-project
-                    data-cursor-label="OPEN"
-                    aria-label={`Open case study: ${project.title}`}
-                  >
-                    <span>View Project</span>
-                    <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/cta:translate-x-1 group-hover/cta:-translate-y-1" />
-                  </button>
-                </div>
-
-                {/* ---------- IMAGE COLUMN ---------- */}
-                <div
-                  className={`${imageCol} ${imageSide === "left" ? "lg:order-1" : "lg:order-2"}`}
-                >
-                  <button
-                    onClick={() => setSelectedProject(project)}
-                    className="project-card group cursor-pointer overflow-hidden"
-                    data-cursor-project
-                    data-cursor-label="OPEN"
-                    aria-label={`Open case study: ${project.title}`}
-                  >
-                    <div className="relative aspect-[4/3] w-full">
-                      {project.image ? (
-                        <Image
-                          src={project.image}
-                          alt={`${project.title} — ${project.subtitle}`}
-                          fill
-                          sizes="(max-width: 1024px) 92vw, 58vw"
-                          className="project-image"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[linear-gradient(135deg,var(--bg-card)_0%,var(--bg-primary)_100%)]">
-                          <span className="font-mono text-[var(--text-micro)] uppercase tracking-[0.3em] text-[var(--text-dim)]">
-                            No Preview
-                          </span>
-                          <span className="font-display text-3xl font-bold uppercase tracking-[-0.03em] text-[var(--text-secondary)]">
-                            {project.title}
-                          </span>
-                          <span className="chip">{project.badge}</span>
-                        </div>
-                      )}
-
-                      {/* editorial scrim */}
-                      <div className="project-scrim" />
-
-                      {/* status tag */}
-                      {project.status && (
-                        <div className="absolute left-5 top-5">
-                          <span className="chip-accent backdrop-blur-md">{project.status}</span>
-                        </div>
-                      )}
-
-                      {/* hover index */}
-                      <div className="absolute bottom-5 right-5">
-                        <span className="font-display text-5xl font-bold tracking-[-0.04em] text-white/10 transition-colors duration-500 group-hover:text-white/20">
-                          {number}
-                        </span>
-                      </div>
-
-                      {/* GitHub link overlay on hover */}
-                      {project.githubUrl && (
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                          <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="pointer-events-auto btn-primary px-8 py-4 text-[var(--text-label-sm)] transform -translate-y-4 group-hover:translate-y-0 transition-transform duration-500"
-                            data-cursor-hover
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <GithubIcon className="h-4 w-4" />
-                            <span>View Source</span>
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                </div>
-
-                {index < projects.length - 1 && (
-                  <div className="col-span-full mt-20 h-px bg-[var(--border-default)] sm:mt-28 lg:mt-36" />
+              <div className="mt-8 flex flex-wrap gap-3">
+                {project.githubUrl && (
+                  <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-primary px-6 py-3.5 text-[var(--text-label-sm)]" data-cursor-hover>
+                    <GithubIcon className="h-4 w-4" /> Source
+                  </a>
                 )}
-              </motion.article>
-            );
-          })}
-        </div>
+                {project.liveDemoUrl && (
+                  <a href={project.liveDemoUrl} target="_blank" rel="noopener noreferrer" className="btn-secondary px-6 py-3.5 text-[var(--text-label-sm)]" data-cursor-hover>
+                    <ExternalLink className="h-4 w-4" aria-hidden="true" /> Live demo
+                  </a>
+                )}
+                <button type="button" onClick={() => setSelectedProject(project)} className="btn-outline cursor-pointer px-6 py-3.5 text-[var(--text-label-sm)]" data-cursor-project data-cursor-label="OPEN">
+                  Open case study <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
 
-        {/* =====================================================
-            MODAL
-        ===================================================== */}
+            <div className="lg:col-span-7">
+              <ArchitectureDiagram project={project} />
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {project.keyHighlights.slice(0, 4).map((highlight) => (
+                  <div key={highlight} className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-4 text-sm leading-relaxed text-[var(--text-secondary)]">
+                    <span className="mt-2 h-px w-4 shrink-0 bg-[var(--text-primary)]" aria-hidden="true" />
+                    {highlight}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
-        <ProjectDossier
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-        />
+        <ProjectDossier project={selectedProject} onClose={() => setSelectedProject(null)} />
       </section>
     </MotionSection>
   );
-};
+}
 
 export default Projects;

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useCallback, useEffect } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 
 interface MagneticElementProps {
   children: React.ReactNode;
@@ -15,6 +15,8 @@ export const MagneticElement: React.FC<MagneticElementProps> = ({
   className,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const [isTouch, setIsTouch] = React.useState<boolean | null>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const springConfig = { stiffness: 280, damping: 22, mass: 0.5 };
@@ -41,15 +43,22 @@ export const MagneticElement: React.FC<MagneticElementProps> = ({
   }, [x, y]);
 
   useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setIsTouch("ontouchstart" in window || navigator.maxTouchPoints > 0);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || shouldReduceMotion || isTouch !== false) return;
     el.addEventListener("mousemove", handleMouseMove);
     el.addEventListener("mouseleave", handleMouseLeave);
     return () => {
       el.removeEventListener("mousemove", handleMouseMove);
       el.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [handleMouseMove, handleMouseLeave]);
+  }, [handleMouseMove, handleMouseLeave, isTouch, shouldReduceMotion]);
 
   return (
     <motion.div

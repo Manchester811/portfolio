@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Manrope, Geist_Mono } from "next/font/google";
+import { personalConfig, siteConfig } from "@/data/config";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -29,6 +30,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  // Base for every relative URL below (canonical, OG image, sitemap).
+  metadataBase: new URL(siteConfig.siteUrl),
   title: "Rishabh Jain — Computer Science Engineer · Data Science",
   description:
     "Portfolio of Rishabh Jain — B.Tech CSE (Data Science) at VIT Vellore. Building and deploying AI applications, developer tools, and data-driven systems.",
@@ -46,22 +49,38 @@ export const metadata: Metadata = {
   authors: [{ name: "Rishabh Jain" }],
   creator: "Rishabh Jain",
   robots: { index: true, follow: true },
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://portfolio-jd2s.vercel.app",
+    url: siteConfig.siteUrl,
+    siteName: "Rishabh Jain Portfolio",
     title: "Rishabh Jain — Computer Science Engineer · Data Science",
     description:
       "B.Tech CSE (Data Science) portfolio of Rishabh Jain — AI applications, developer tools, and data-driven systems.",
-    siteName: "Rishabh Jain Portfolio",
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: "Rishabh Jain — Computer Science Engineer · Data Science",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Rishabh Jain — Computer Science Engineer · Data Science",
     description:
       "B.Tech CSE (Data Science) portfolio of Rishabh Jain — AI applications, developer tools, and data systems.",
+    images: [siteConfig.ogImage],
   },
-  icons: { icon: "/favicon.ico" },
+  /*
+   * No `icons` entry on purpose: app/favicon.ico exists, and the App Router
+   * file convention serves it at /favicon.ico with its own <link> tag, so an
+   * explicit icons key would only duplicate it.
+   */
 };
 
 export default function RootLayout({
@@ -78,6 +97,41 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${manrope.variable} ${geistMono.variable}`}
     >
       <body className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased selection:bg-[var(--accent-primary-muted)] selection:text-[var(--text-primary)]">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              "@id": `${siteConfig.siteUrl}#person`,
+              name: siteConfig.name,
+              url: siteConfig.siteUrl,
+              image: new URL(personalConfig.avatarUrl, siteConfig.siteUrl).toString(),
+              jobTitle: siteConfig.role,
+              description: personalConfig.shortBio,
+              email: siteConfig.email,
+              telephone: siteConfig.phone,
+              affiliation: {
+                "@type": "CollegeOrUniversity",
+                name: "Vellore Institute of Technology",
+                alternateName: "VIT Vellore",
+              },
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "Vellore",
+                addressRegion: "Tamil Nadu",
+                addressCountry: "IN",
+              },
+              sameAs: [siteConfig.github, siteConfig.linkedin],
+              knowsAbout: [
+                "Data Science",
+                "Generative AI",
+                "Machine Learning",
+                "Developer Tools",
+              ],
+            }).replace(/</g, "\\u003c"),
+          }}
+        />
         {children}
       </body>
     </html>

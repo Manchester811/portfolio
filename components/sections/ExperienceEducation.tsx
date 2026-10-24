@@ -18,7 +18,7 @@ export const ExperienceEducation: React.FC = () => {
             SECTION HEADER
         ===================================================== */}
 
-        <div className="mb-14 border-b border-[var(--border-default)] pb-10 md:mb-20">
+        <div className="mb-10 border-b border-[var(--border-default)] pb-6">
           <motion.span
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -26,7 +26,7 @@ export const ExperienceEducation: React.FC = () => {
             transition={{ duration: 0.6, ease }}
             className="label mb-5 block"
           >
-            04 / Trajectory
+             05 / Trajectory
           </motion.span>
 
           <motion.h2
@@ -48,7 +48,7 @@ export const ExperienceEducation: React.FC = () => {
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-2 lg:gap-0">
           {/* ---------- EXPERIENCE ---------- */}
           <div className="lg:pr-12">
-            <p className="label-muted mb-8">Experience</p>
+            <p className="label-muted mb-8">Learning</p>
 
             <div className="border-t border-[var(--border-default)]">
               {experienceData.map((exp, index) => (

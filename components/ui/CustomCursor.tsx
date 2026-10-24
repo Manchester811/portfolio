@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 
 export const CustomCursor: React.FC = () => {
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [cursorType, setCursorType] = useState<"default" | "hover" | "project">("default");
   const [label, setLabel] = useState("");
+  const shouldReduceMotion = useReducedMotion();
   const isVisible = useRef(false);
   const initialized = useRef(false);
 
@@ -76,7 +77,7 @@ export const CustomCursor: React.FC = () => {
     };
   }, [rawX, rawY, checkTarget]);
 
-  if (!isClient || isTouchDevice) return null;
+  if (!isClient || isTouchDevice || shouldReduceMotion) return null;
 
   return (
     <>
@@ -96,15 +97,15 @@ export const CustomCursor: React.FC = () => {
             height: cursorType === "project" ? 80 : cursorType === "hover" ? 44 : 28,
             borderColor:
               cursorType === "project"
-                ? "#65D9FF"
+                ? "#FFFFFF"
                 : cursorType === "hover"
-                ? "rgba(209, 140, 60, 0.6)"
+                ? "rgba(255, 255, 255, 0.6)"
                 : "rgba(240, 235, 227, 0.2)",
             backgroundColor:
               cursorType === "project"
-                ? "rgba(209, 140, 60, 0.1)"
+                ? "rgba(255, 255, 255, 0.1)"
                 : cursorType === "hover"
-                ? "rgba(209, 140, 60, 0.06)"
+                ? "rgba(255, 255, 255, 0.06)"
                 : "transparent",
             scale: cursorType === "project" ? 1.05 : 1,
           }}
@@ -129,13 +130,13 @@ export const CustomCursor: React.FC = () => {
             height: cursorType === "project" ? 4 : cursorType === "hover" ? 7 : 5,
             backgroundColor:
               cursorType === "project"
-                ? "#65D9FF"
+                ? "#FFFFFF"
                 : cursorType === "hover"
-                ? "#4FC3E6"
+                ? "#D8D8D8"
                 : "#F5F5F5",
             boxShadow:
               cursorType !== "default"
-                ? "0 0 8px rgba(209, 140, 60, 0.7)"
+                 ? "0 0 8px rgba(255, 255, 255, 0.7)"
                 : "none",
           }}
           transition={{ duration: 0.15 }}
@@ -148,7 +149,7 @@ export const CustomCursor: React.FC = () => {
             initial={{ opacity: 0, scale: 0.75 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.75 }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-sans font-semibold tracking-widest text-[#65D9FF] uppercase whitespace-nowrap pointer-events-none select-none"
+             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-sans font-semibold tracking-widest text-white uppercase whitespace-nowrap pointer-events-none select-none"
           >
             {label}
           </motion.span>

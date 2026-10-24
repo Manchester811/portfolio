@@ -4,6 +4,12 @@ export interface SkillItem {
   iconName?: string;
   tag?: string;
   description?: string;
+  /**
+   * Set while the skill has no matching project in data/projects.ts. Renders a
+   * small marker so the gap is visible; clear it once you add a project or
+   * decide the skill stays on its own merit.
+   */
+  flagged?: boolean;
 }
 
 export interface SkillCategory {
@@ -15,6 +21,23 @@ export interface SkillCategory {
   skills: SkillItem[];
 }
 
+/*
+ * ─────────────────────────────────────────────────────────────────────────────
+ * "Data Visualization" and "EDA" were removed: they are activities/practices,
+ * not tools, so they did not belong in a stack list.
+ *
+ * TODO(you) — skills with NO matching project in data/projects.ts are marked
+ * with `flagged: true` below. They are kept for now so you can decide:
+ *   Programming & Databases : R, MySQL, PostgreSQL
+ *   Data Science & ML       : TensorFlow, Keras
+ *   Generative AI & NLP     : NLP
+ *   Tools & Deployment      : Docker, Gradio, Google Colab
+ * Either add a project that uses them, drop them, or keep them (coursework and
+ * daily use are legitimate evidence even without a public repo).
+ * Clear the `flagged` flag once you have decided.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
 export const skillCategories: SkillCategory[] = [
   {
     id: "programming-databases",
@@ -23,12 +46,12 @@ export const skillCategories: SkillCategory[] = [
     icon: "Code",
     accentColor: "cyan",
     skills: [
+      { name: "Java" },
       { name: "Python" },
       { name: "SQL" },
-      { name: "R" },
-      { name: "Java" },
-      { name: "MySQL" },
-      { name: "PostgreSQL" },
+      { name: "R", flagged: true },
+      { name: "MySQL", flagged: true },
+      { name: "PostgreSQL", flagged: true },
     ],
   },
   {
@@ -41,10 +64,8 @@ export const skillCategories: SkillCategory[] = [
       { name: "Pandas" },
       { name: "NumPy" },
       { name: "Scikit-learn" },
-      { name: "TensorFlow" },
-      { name: "Keras" },
-      { name: "Data Visualization" },
-      { name: "EDA" },
+      { name: "TensorFlow", flagged: true },
+      { name: "Keras", flagged: true },
     ],
   },
   {
@@ -58,8 +79,8 @@ export const skillCategories: SkillCategory[] = [
       { name: "LLMs" },
       { name: "Google Gemini API" },
       { name: "Prompt Engineering" },
-      { name: "NLP" },
       { name: "MCP" },
+      { name: "NLP", flagged: true },
     ],
   },
   {
@@ -71,11 +92,11 @@ export const skillCategories: SkillCategory[] = [
     skills: [
       { name: "Git" },
       { name: "GitHub" },
-      { name: "Docker" },
       { name: "Streamlit" },
-      { name: "Gradio" },
       { name: "Hugging Face Spaces" },
-      { name: "Google Colab" },
+      { name: "Docker", flagged: true },
+      { name: "Gradio", flagged: true },
+      { name: "Google Colab", flagged: true },
     ],
   },
 ];

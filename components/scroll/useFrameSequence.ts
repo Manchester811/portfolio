@@ -9,6 +9,7 @@ import {
   MOBILE_BUDGET,
   clampFrameIndex,
   frameFromProgress,
+  framePath,
   isCoarsePointer,
   type FrameBudget,
 } from "./frameSequence";
@@ -288,7 +289,7 @@ export const useFrameSequence = ({
       lastDrawnRef.current = -1;
       scheduleDraw();
     };
-    img.src = "/frames/frame_000000.png";
+    img.src = framePath(0);
 
     return () => {
       img.onload = null;

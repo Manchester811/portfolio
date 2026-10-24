@@ -80,11 +80,14 @@ export const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({ 
         const element =
           typeof target === "string" ? document.querySelector(target) : target;
         if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
+          // No Lenis (reduced motion, or before mount): jump, never glide.
+          element.scrollIntoView({
+            behavior: shouldReduceMotion ? "auto" : "smooth",
+          });
         }
       }
     },
-    []
+    [shouldReduceMotion]
   );
 
   return (
