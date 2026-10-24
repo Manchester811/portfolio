@@ -1,10 +1,8 @@
 .gooey-nav {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
-  pointer-events: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
 }
 
 .gooey-nav-inner {

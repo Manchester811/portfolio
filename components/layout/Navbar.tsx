@@ -107,23 +107,28 @@ export const Navbar: React.FC = () => {
         if (!event.currentTarget.contains(event.relatedTarget)) setMobileMenuOpen(false);
       }}
     >
-      <div className="flex items-center gap-2 glass-pill rounded-full px-3 py-2">
-        <a href="#hero" onClick={(e) => { e.preventDefault(); handleNavClick("hero"); }} className="nav-icon-button font-display text-xs font-bold" aria-label="Rishabh Jain — back to top" title="Rishabh Jain">
+      <div className="flex items-center gap-3 lg:gap-5 rounded-full px-4 py-2.5 lg:px-5 lg:py-3 glass-pill" style={{ minWidth: 320 }}>
+        <a href="#hero" onClick={(e) => { e.preventDefault(); handleNavClick("hero"); }} className="nav-icon-button font-display text-xs font-bold shrink-0" aria-label="Rishabh Jain — back to top" title="Rishabh Jain">
           <span className="flex size-8 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)]">RJ</span>
         </a>
-        <div className="mx-1 h-4 w-px bg-[var(--border-default)]" aria-hidden="true" />
-        <GooeyNav />
-        <div className="mx-1 h-4 w-px bg-[var(--border-default)]" aria-hidden="true" />
-        <button type="button" onClick={openContact} className="hidden min-h-8 cursor-pointer items-center gap-1 rounded-full bg-[var(--text-primary)] px-3 text-xs font-semibold text-[var(--bg-primary)] transition-colors hover:bg-[var(--accent-primary-hover)] lg:flex" data-cursor-hover aria-label="Hire me">
-          Hire me <ArrowUpRight className="size-3.5" aria-hidden="true" />
-        </button>
-        <button type="button" onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true })); }} className="nav-icon-button" data-cursor-hover aria-label="Open command palette" title="Search · Ctrl/⌘ K">
-          <Search className="size-4" aria-hidden="true" />
-        </button>
-        <ThemeToggle />
-        <button ref={menuButtonRef} type="button" onClick={() => setMobileMenuOpen((o) => !o)} className="nav-link flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-medium lg:hidden" aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation" data-cursor-hover>
-          Menu {mobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-        </button>
+
+        <div className="mx-1 h-4 w-px bg-[var(--border-default)] shrink-0" aria-hidden="true" />
+
+        <div className="flex-1 min-w-0 flex items-center justify-center">
+          <GooeyNav />
+        </div>
+
+        <div className="mx-1 h-4 w-px bg-[var(--border-default)] shrink-0 hidden lg:block" aria-hidden="true" />
+
+        <div className="flex items-center gap-2 shrink-0">
+          <button type="button" onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true })); }} className="nav-icon-button" data-cursor-hover aria-label="Open command palette" title="Search · Ctrl/⌘ K">
+            <Search className="size-4" aria-hidden="true" />
+          </button>
+          <ThemeToggle />
+          <button type="button" onClick={openContact} className="hidden lg:inline-flex min-h-8 cursor-pointer items-center gap-1 rounded-full bg-[var(--text-primary)] px-3 text-xs font-semibold text-[var(--bg-primary)] transition-colors hover:bg-[var(--accent-primary-hover)]" data-cursor-hover aria-label="Hire me">
+            Hire me <ArrowUpRight className="size-3.5" aria-hidden="true" />
+          </button>
+        </div>
       </div>
       <AnimatePresence>
         {mobileMenuOpen && (
