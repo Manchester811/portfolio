@@ -1,0 +1,85 @@
+.spotlight-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--spotlight-card-radius, var(--radius-lg));
+  background-color: var(--spotlight-card-surface, var(--bg-card));
+  box-shadow: var(
+    --spotlight-card-shadow,
+    0 24px 48px -24px var(--surface-shadow)
+  );
+}
+
+.spotlight-card__light,
+.spotlight-card__grain,
+.spotlight-card__border,
+.spotlight-card__edge {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.spotlight-card__light,
+.spotlight-card__grain {
+  z-index: -1;
+  opacity: 0;
+}
+
+.spotlight-card__light {
+  transition: opacity 180ms var(--ease-out);
+}
+
+.spotlight-card__grain {
+  background-size: 160px 160px;
+  mix-blend-mode: overlay;
+}
+
+.spotlight-card__border,
+.spotlight-card__edge {
+  z-index: 1;
+  padding: 1px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+}
+
+.spotlight-card__border {
+  background: var(--spotlight-card-border, var(--border-default));
+}
+
+.spotlight-card__edge {
+  opacity: 0;
+  transition: opacity 180ms var(--ease-out);
+}
+
+.spotlight-card--project {
+  --spotlight-card-radius: var(--radius-xl);
+  --spotlight-card-surface: var(--bg-secondary);
+  --spotlight-card-shadow: 0 20px 60px -36px var(--surface-shadow);
+}
+
+.spotlight-card--skill {
+  --spotlight-card-radius: var(--radius-lg);
+  --spotlight-card-surface: var(--bg-card);
+  --spotlight-card-shadow: none;
+}
+
+@media (max-width: 1023px), (hover: none), (pointer: coarse) {
+  .spotlight-card__light,
+  .spotlight-card__edge,
+  .spotlight-card__grain {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-card__light,
+  .spotlight-card__edge {
+    transition: none;
+  }
+}
