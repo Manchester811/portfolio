@@ -14,6 +14,9 @@ const SmoothScrollContext = createContext<SmoothScrollContextType>({
 
 export const useSmoothScroll = () => useContext(SmoothScrollContext);
 
+const navigationOffset = () =>
+  -(parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 96);
+
 export const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const shouldReduceMotion = useReducedMotion();
   const lenisRef = useRef<Lenis | null>(null);
@@ -42,6 +45,7 @@ export const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     // Intercept in-page hash links for smooth scrolling
     const handleAnchorClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
       const target = (e.target as HTMLElement).closest("a");
       if (!target) return;
       const href = target.getAttribute("href");
@@ -50,7 +54,7 @@ export const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (element) {
           e.preventDefault();
           lenis.scrollTo(element as HTMLElement, {
-            offset: -30,
+            offset: navigationOffset(),
             duration: 1.2,
           });
         }
@@ -73,7 +77,7 @@ export const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const lenis = lenisRef.current;
       if (lenis) {
         lenis.scrollTo(target, {
-          offset: options?.offset ?? -30,
+          offset: options?.offset ?? navigationOffset(),
           duration: options?.duration ?? 1.2,
         });
       } else {
@@ -81,7 +85,8 @@ export const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({ 
           typeof target === "string" ? document.querySelector(target) : target;
         if (element) {
           // No Lenis (reduced motion, or before mount): jump, never glide.
-          element.scrollIntoView({
+          window.scrollTo({
+            top: element.getBoundingClientRect().top + window.scrollY + (options?.offset ?? navigationOffset()),
             behavior: shouldReduceMotion ? "auto" : "smooth",
           });
         }

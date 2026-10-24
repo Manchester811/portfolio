@@ -97,15 +97,15 @@ export const CustomCursor: React.FC = () => {
             height: cursorType === "project" ? 80 : cursorType === "hover" ? 44 : 28,
             borderColor:
               cursorType === "project"
-                ? "#FFFFFF"
+                ? "var(--accent-primary)"
                 : cursorType === "hover"
-                ? "rgba(255, 255, 255, 0.6)"
-                : "rgba(240, 235, 227, 0.2)",
+                ? "rgba(var(--foreground-rgb), 0.6)"
+                : "var(--border-hover)",
             backgroundColor:
               cursorType === "project"
-                ? "rgba(255, 255, 255, 0.1)"
+                ? "var(--accent-primary-muted)"
                 : cursorType === "hover"
-                ? "rgba(255, 255, 255, 0.06)"
+                ? "var(--accent-muted)"
                 : "transparent",
             scale: cursorType === "project" ? 1.05 : 1,
           }}
@@ -130,13 +130,13 @@ export const CustomCursor: React.FC = () => {
             height: cursorType === "project" ? 4 : cursorType === "hover" ? 7 : 5,
             backgroundColor:
               cursorType === "project"
-                ? "#FFFFFF"
+                ? "var(--accent-primary)"
                 : cursorType === "hover"
-                ? "#D8D8D8"
-                : "#F5F5F5",
+                ? "var(--text-secondary)"
+                : "var(--text-primary)",
             boxShadow:
               cursorType !== "default"
-                 ? "0 0 8px rgba(255, 255, 255, 0.7)"
+                ? "0 0 8px var(--accent-glow-strong)"
                 : "none",
           }}
           transition={{ duration: 0.15 }}
@@ -149,7 +149,7 @@ export const CustomCursor: React.FC = () => {
             initial={{ opacity: 0, scale: 0.75 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.75 }}
-             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-sans font-semibold tracking-widest text-white uppercase whitespace-nowrap pointer-events-none select-none"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-sans font-semibold tracking-widest text-[var(--text-primary)] uppercase whitespace-nowrap pointer-events-none select-none"
           >
             {label}
           </motion.span>

@@ -38,7 +38,7 @@ export const CommandPalette: React.FC = () => {
     (id: string) => {
       setOpen(false);
       const el = document.getElementById(id);
-      if (el) scrollTo(el, { offset: -30, duration: 1.0 });
+      if (el) scrollTo(el, { duration: 1.0 });
     },
     [scrollTo]
   );
@@ -151,7 +151,7 @@ export const CommandPalette: React.FC = () => {
           >
             <div className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-default)] shadow-[0_24px_70px_rgba(0,0,0,0.85)] overflow-hidden font-sans">
               {/* Search input */}
-              <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
+              <div className="flex items-center gap-3 px-5 py-4 border-b border-[var(--border-subtle)]">
                 <Search className="w-4 h-4 text-[var(--text-accent)] shrink-0" />
                 <input
                   ref={inputRef}
@@ -187,7 +187,7 @@ export const CommandPalette: React.FC = () => {
                             className={`w-full flex items-center gap-3 px-5 py-3 text-left transition-colors cursor-pointer ${
                               selected === idx
                                 ? "bg-[var(--accent-primary-muted)] text-[var(--text-accent)] border-l-2 border-[var(--accent-primary)]"
-                                : "text-[var(--text-secondary)] hover:bg-white/[0.03] border-l-2 border-transparent"
+                                : "text-[var(--text-secondary)] hover:bg-[var(--accent-muted)] border-l-2 border-transparent"
                             }`}
                           >
                             <span className="shrink-0">
@@ -212,7 +212,7 @@ export const CommandPalette: React.FC = () => {
               </div>
 
               {/* Footer hint */}
-              <div className="flex items-center justify-between px-5 py-2.5 border-t border-white/[0.05] text-[10px] font-mono text-[var(--text-muted)] bg-[var(--bg-primary)]/40">
+              <div className="flex items-center justify-between px-5 py-2.5 border-t border-[var(--border-subtle)] text-[10px] font-mono text-[var(--text-muted)] bg-[var(--bg-primary)]/40">
                 <span>↑↓ navigate · ↵ select · esc close</span>
                 <span>⌘K</span>
               </div>

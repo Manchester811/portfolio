@@ -23,8 +23,8 @@ export function ArchitectureDiagram({ project }: { project: ProjectItem }) {
       >
         <defs>
           <linearGradient id={`flow-${project.id}`} x1="0" x2="1">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.18)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0.8)" />
+            <stop offset="0%" stopColor="currentColor" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="currentColor" stopOpacity="0.8" />
           </linearGradient>
         </defs>
         <path
@@ -42,8 +42,10 @@ export function ArchitectureDiagram({ project }: { project: ProjectItem }) {
                 cx={x}
                 cy="130"
                 r={index === 0 ? 34 : 27}
-                fill={index === 0 ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)"}
-                stroke="rgba(255,255,255,0.45)"
+                fill="currentColor"
+                fillOpacity={index === 0 ? 0.12 : 0.04}
+                stroke="currentColor"
+                strokeOpacity="0.45"
                 strokeWidth="1"
                 initial={shouldReduceMotion ? false : { scale: 0.7, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -62,7 +64,7 @@ export function ArchitectureDiagram({ project }: { project: ProjectItem }) {
               <text
                 x={x}
                 y="190"
-                fill="rgba(255,255,255,0.38)"
+                fill="var(--text-muted)"
                 fontSize="9"
                 fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
                 letterSpacing="1.6"

@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
-import { cn } from "@/lib/utils";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { personalData } from "@/data/personal";
 import { ArrowUpRight, Search, Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useSmoothScroll } from "@/components/layout/SmoothScroll";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface NavItem {
   id: string;
@@ -25,12 +25,41 @@ export const Navbar: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const shouldReduceMotion = useReducedMotion();
   const { scrollTo } = useSmoothScroll();
 
   const openContact = useCallback(() => {
     setMobileMenuOpen(false);
     window.dispatchEvent(new CustomEvent("open-contact-modal"));
   }, []);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) setMobileMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setMobileMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const closeOnDesktop = () => {
+      if (desktop.matches) setMobileMenuOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+      desktop.removeEventListener("change", closeOnDesktop);
+    };
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 24);
@@ -64,169 +93,117 @@ export const Navbar: React.FC = () => {
       setActiveSection(id);
       setMobileMenuOpen(false);
       const el = document.getElementById(id);
-      if (el) scrollTo(el, { offset: -20, duration: 1.1 });
+      if (el) scrollTo(el, { duration: 1.1 });
     },
     [scrollTo]
   );
 
   return (
-    <>
-      <header
-        role="banner"
-        className="fixed inset-x-0 top-5 z-50 transition-all duration-500 md:top-6"
-      >
-        <div className="mx-auto flex w-full max-w-[var(--container-max)] items-center px-4 sm:px-6 lg:px-8">
-          {/* Glass pill navbar */}
-          <nav
-            className={cn(
-              "relative flex w-full items-center gap-2 rounded-full border px-3 py-2 transition-all duration-500 sm:gap-3 sm:px-4 sm:py-2.5",
-              "border-[var(--border-default)] backdrop-blur-2xl",
-              isScrolled
-                ? "bg-[rgba(8,8,8,0.82)] shadow-[0_12px_40px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.05)_inset]"
-                : "bg-[rgba(5,5,5,0.6)] shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(255,255,255,0.03)_inset]"
-            )}
-          >
-            {/* Inner highlight */}
-            <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-[rgba(255,255,255,0.06)] via-transparent to-transparent" />
+    <header
+      ref={headerRef}
+      className="fixed left-1/2 top-4 z-50 w-max max-w-[calc(100%-2rem)] -translate-x-1/2 sm:top-6"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setMobileMenuOpen(false);
+      }}
+    >
+      <div className="glass-pill flex items-center gap-1 rounded-full p-1 lg:p-1.5" data-scrolled={isScrolled}>
+        <button
+          type="button"
+          onClick={() => handleNavClick("hero")}
+          className="nav-icon-button font-display text-xs font-bold"
+          aria-label="Rishabh Jain — back to top"
+          title="Rishabh Jain — back to top"
+          data-cursor-hover
+        >
+          <span className="flex size-8 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)]">RJ</span>
+        </button>
 
-            {/* Brand / Logo — small circular element */}
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
+          {navItems.map((item) => (
             <button
-              onClick={() => handleNavClick("hero")}
-              className="relative z-10 flex shrink-0 cursor-pointer items-center gap-2.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)]"
+              key={item.id}
+              type="button"
+              onClick={() => handleNavClick(item.id)}
+              aria-current={activeSection === item.id ? "location" : undefined}
+              className="nav-link min-h-8 rounded-full px-3 text-sm font-medium"
               data-cursor-hover
-              title="Rishabh Jain — back to top"
             >
-              <span className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-[var(--border-default)] bg-[var(--bg-card)]">
-                <span className="flex h-9 w-9 items-center justify-center bg-gradient-to-br from-[var(--text-primary)] to-[var(--text-secondary)]">
-                  <span className="font-display text-[11px] font-bold tracking-[-0.02em] text-[var(--bg-primary)]">
-                    RJ
-                  </span>
-                </span>
-              </span>
-              <span className="relative z-10 hidden font-display text-sm font-semibold uppercase tracking-[-0.02em] text-[var(--text-primary)] lg:inline">
-                Rishabh Jain
-              </span>
+              {item.label}
             </button>
+          ))}
+        </nav>
 
-            {/* Subtle divider */}
-            <div className="hidden h-5 w-px shrink-0 bg-[var(--border-default)] lg:block" />
+        <span className="mx-1 h-4 w-px bg-[var(--border-default)]" aria-hidden="true" />
+        <button
+          type="button"
+          onClick={() => {
+            setMobileMenuOpen(false);
+            window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }));
+          }}
+          className="nav-icon-button"
+          data-cursor-hover
+          aria-label="Open command palette"
+          title="Search · Ctrl/⌘ K"
+        >
+          <Search className="size-4" aria-hidden="true" />
+        </button>
+        <ThemeToggle />
+        <button
+          type="button"
+          onClick={openContact}
+          className="hidden min-h-8 cursor-pointer items-center gap-1 rounded-full bg-[var(--text-primary)] px-3 text-xs font-semibold text-[var(--bg-primary)] transition-colors hover:bg-[var(--accent-primary-hover)] lg:flex"
+          data-cursor-hover
+        >
+          Hire me <ArrowUpRight className="size-3.5" aria-hidden="true" />
+        </button>
+        <button
+          ref={menuButtonRef}
+          type="button"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          className="nav-link flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-medium lg:hidden"
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-navigation"
+          data-cursor-hover
+        >
+          Menu
+          {mobileMenuOpen ? <X className="size-4" aria-hidden="true" /> : <Menu className="size-4" aria-hidden="true" />}
+        </button>
+      </div>
 
-            {/* Desktop navigation links */}
-            <div
-              className="hidden flex-1 items-center justify-center gap-1 lg:flex"
-              role="navigation"
-              aria-label="Primary"
-            >
-              {navItems.map((item) => {
-                const isActive = activeSection === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleNavClick(item.id)}
-                    aria-current={isActive ? "page" : undefined}
-                    className={cn(
-                      "relative flex cursor-pointer items-center rounded-full px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] transition-all duration-300",
-                      "focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)] focus-visible:outline-none",
-                      isActive
-                        ? "bg-[rgba(255,255,255,0.12)] text-[var(--text-primary)] shadow-[0_2px_8px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.08)_inset]"
-                        : "text-[var(--text-muted)] hover:bg-[rgba(255,255,255,0.05)] hover:text-[var(--text-secondary)]"
-                    )}
-                    data-cursor-hover
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Right side — search + resume + mobile hamburger */}
-            <div className="relative z-10 ml-auto flex items-center gap-1.5 sm:gap-2">
-              {/* Search / Command Palette */}
-              <button
-                onClick={() => {
-                  window.dispatchEvent(
-                    new KeyboardEvent("keydown", { key: "k", ctrlKey: true })
-                  );
-                }}
-                className="group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--bg-card)] text-[var(--text-muted)] transition-all duration-300 hover:border-[var(--border-strong)] hover:bg-[var(--bg-card-hover)] hover:text-[var(--text-secondary)]"
-                data-cursor-hover
-                aria-label="Open command palette"
-              >
-                <Search className="h-4 w-4" />
-              </button>
-
-              {/* Primary contact CTA */}
-              <button
-                type="button"
-                onClick={openContact}
-                className="hidden h-9 cursor-pointer items-center gap-1.5 rounded-full bg-[var(--text-primary)] px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[var(--bg-primary)] transition-all duration-300 hover:bg-[var(--accent-primary-hover)] lg:flex"
-                data-cursor-hover
-              >
-                <span>Hire me</span>
-                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
-              </button>
-
-              {/* Mobile hamburger */}
-              <button
-                onClick={() => setMobileMenuOpen((v) => !v)}
-                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-[var(--border-default)] bg-[var(--bg-card)] text-[var(--text-primary)] transition-all duration-300 hover:border-[var(--border-strong)] lg:hidden"
-                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                aria-expanded={mobileMenuOpen}
-                data-cursor-hover
-              >
-                {mobileMenuOpen ? (
-                  <X className="h-4 w-4" />
-                ) : (
-                  <Menu className="h-4 w-4" />
-                )}
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
-
-      {/* Mobile overlay */}
+      {/* Non-modal disclosure: the page and theme control remain accessible. */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 flex flex-col justify-between bg-[var(--bg-primary)]/95 px-6 pb-10 pt-28 backdrop-blur-xl lg:hidden"
+            id="mobile-navigation"
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -6 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.16 }}
+            style={{ backgroundColor: "var(--bg-secondary)" }}
+            className="glass-pill absolute left-1/2 top-full mt-2 max-h-[calc(100dvh-7rem)] w-72 max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-[var(--radius-xl)] p-2 lg:hidden"
+            data-lenis-prevent
           >
-            <nav className="flex flex-col" aria-label="Mobile">
-              {navItems.map((item, i) => (
-                  <motion.button
-                    key={item.id}
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: 0.06 * i + 0.08,
-                      duration: 0.5,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                    onClick={() => handleNavClick(item.id)}
-                    className="flex cursor-pointer items-baseline justify-between border-b border-[var(--border-subtle)] py-5 text-left"
-                  >
-                    <span className="font-display text-3xl font-bold uppercase tracking-[-0.03em] text-[var(--text-primary)]">
-                      {item.label}
-                    </span>
-                    <span className="font-mono text-[var(--text-micro)] text-[var(--text-muted)]">
-                      0{i + 1}
-                    </span>
-                  </motion.button>
-                )
-              )}
+            <nav className="flex flex-col gap-1" aria-label="Mobile">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    menuButtonRef.current?.focus();
+                    handleNavClick(item.id);
+                  }}
+                  aria-current={activeSection === item.id ? "location" : undefined}
+                  className="nav-link flex min-h-11 items-center justify-between rounded-full px-4 text-left text-sm font-medium"
+                >
+                  {item.label}
+                  {activeSection === item.id && <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />}
+                </button>
+              ))}
             </nav>
 
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.36, duration: 0.5 }}
-              className="flex flex-col gap-3"
-            >
-              <button type="button" onClick={openContact} className="btn-primary w-full cursor-pointer py-4 text-[var(--text-label-sm)]">
+            <div className="mt-2 grid grid-cols-2 gap-1 border-t border-[var(--border-subtle)] pt-2">
+              <button type="button" onClick={openContact} className="btn-primary col-span-2 min-h-11 px-3">
                 <span>Start a conversation</span>
                 <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -234,7 +211,7 @@ export const Navbar: React.FC = () => {
                 href={personalData.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary w-full py-4 text-[var(--text-label-sm)]"
+                className="nav-link flex min-h-11 items-center justify-center gap-1 rounded-full text-xs"
               >
                 <span>Download Résumé</span>
                 <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
@@ -243,16 +220,16 @@ export const Navbar: React.FC = () => {
                 href={personalData.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary w-full py-4 text-[var(--text-label-sm)]"
+                className="nav-link flex min-h-11 items-center justify-center gap-1 rounded-full text-xs"
               >
                 <span>GitHub</span>
-                <ArrowUpRight className="h-4 w-4" />
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
               </a>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </header>
   );
 };
 
