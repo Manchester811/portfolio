@@ -89,7 +89,7 @@ export const Hero: React.FC = () => {
           <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
             <motion.div
               ref={wrapRef}
-              className="absolute inset-0 h-full w-full overflow-hidden"
+              className="hero-portrait absolute inset-0 h-full w-full overflow-hidden"
               aria-hidden="true"
             >
               <div className="absolute inset-0">

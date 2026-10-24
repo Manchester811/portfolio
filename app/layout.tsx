@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Manrope, Geist_Mono } from "next/font/google";
 import { personalConfig, siteConfig } from "@/data/config";
+import { themeInitScript } from "@/lib/theme";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -24,7 +25,7 @@ const geistMono = Geist_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#050505",
+  themeColor: "#070707",
   width: "device-width",
   initialScale: 1,
 };
@@ -94,8 +95,12 @@ export default function RootLayout({
      */
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${spaceGrotesk.variable} ${manrope.variable} ${geistMono.variable}`}
     >
+      <head>
+        <script id="portfolio-theme" dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased selection:bg-[var(--accent-primary-muted)] selection:text-[var(--text-primary)]">
         <script
           type="application/ld+json"
