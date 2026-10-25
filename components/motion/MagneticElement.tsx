@@ -16,7 +16,7 @@ export const MagneticElement: React.FC<MagneticElementProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
-  const [isTouch, setIsTouch] = React.useState<boolean | null>(null);
+  const [canHover, setCanHover] = React.useState<boolean | null>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const springConfig = { stiffness: 280, damping: 22, mass: 0.5 };
@@ -43,22 +43,26 @@ export const MagneticElement: React.FC<MagneticElementProps> = ({
   }, [x, y]);
 
   useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      setIsTouch("ontouchstart" in window || navigator.maxTouchPoints > 0);
-    });
-    return () => window.cancelAnimationFrame(frame);
+    const media = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const frame = window.requestAnimationFrame(() => setCanHover(media.matches));
+    const update = () => setCanHover(media.matches);
+    media.addEventListener("change", update);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      media.removeEventListener("change", update);
+    };
   }, []);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || shouldReduceMotion || isTouch !== false) return;
+    if (!el || shouldReduceMotion || canHover !== true) return;
     el.addEventListener("mousemove", handleMouseMove);
     el.addEventListener("mouseleave", handleMouseLeave);
     return () => {
       el.removeEventListener("mousemove", handleMouseMove);
       el.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [handleMouseMove, handleMouseLeave, isTouch, shouldReduceMotion]);
+  }, [handleMouseMove, handleMouseLeave, canHover, shouldReduceMotion]);
 
   return (
     <motion.div

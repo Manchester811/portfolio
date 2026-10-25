@@ -22,7 +22,7 @@ import { Footer } from "@/components/layout/Footer";
 export default function Home() {
   return (
     <SmoothScrollProvider>
-      <div className="relative min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-x-hidden selection:bg-[var(--accent-primary-muted)] selection:text-[var(--text-primary)]">
+      <div className="relative min-h-screen overflow-x-clip bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--accent-primary-muted)] selection:text-[var(--text-primary)]">
         <SiteLoader />
         {/* Custom cursor (desktop only — auto-hides on touch) */}
         <CustomCursor />

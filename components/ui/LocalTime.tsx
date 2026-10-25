@@ -13,11 +13,11 @@ const formatTime = () =>
   }).format(new Date());
 
 export function LocalTime({ compact = false }: { compact?: boolean }) {
-  const [time, setTime] = useState("--:--");
+  const [time, setTime] = useState("--:-- IST");
 
   useEffect(() => {
     const update = () => setTime(formatTime());
-    update();
+    try { update(); } catch { setTime("--:--"); }
     const interval = window.setInterval(update, 60_000);
     return () => window.clearInterval(interval);
   }, []);

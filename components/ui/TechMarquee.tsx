@@ -38,9 +38,9 @@ export function TechMarquee() {
           </div>
           <p className="body-text-sm max-w-xs">Hover to pause the stack stream.</p>
         </div>
-        <div className="space-y-3" onMouseEnter={(event) => event.currentTarget.classList.add("is-paused")} onMouseLeave={(event) => event.currentTarget.classList.remove("is-paused")}>
-          <MarqueeRow items={duplicate} />
-          <MarqueeRow items={duplicate} reverse />
+        <div className="space-y-3" aria-label="Technology stack marquee" aria-describedby="tech-stack-desc" onMouseEnter={(event) => event.currentTarget.classList.add("is-paused")} onMouseLeave={(event) => event.currentTarget.classList.remove("is-paused")}>
+          <MarqueeRow items={duplicate} aria-hidden="true" />
+          <MarqueeRow items={duplicate} reverse aria-hidden="true" />
         </div>
       </section>
     </MotionSection>

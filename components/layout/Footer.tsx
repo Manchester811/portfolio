@@ -3,11 +3,14 @@
 import { personalData } from "@/data/personal";
 import { ArrowUp, ArrowUpRight, Download } from "lucide-react";
 import { LocalTime } from "@/components/ui/LocalTime";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { useSmoothScroll } from "@/components/layout/SmoothScroll";
 
 export function Footer() {
   const openContact = () => window.dispatchEvent(new CustomEvent("open-contact-modal"));
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const shouldReduceMotion = useReducedMotion();
+  const { scrollTo } = useSmoothScroll();
+  const scrollToTop = () => scrollTo("#hero", { duration: shouldReduceMotion ? 0 : 1.1 });
   const links = [
     { label: "GitHub", href: personalData.github },
     { label: "LinkedIn", href: personalData.linkedin },

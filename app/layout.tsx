@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Manrope, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, Manrope, Geist_Mono, Inter, Instrument_Serif } from "next/font/google";
 import { personalConfig, siteConfig } from "@/data/config";
 import { themeInitScript } from "@/lib/theme";
+import { BackgroundGlow } from "@/components/layout/BackgroundGlow";
 import "./globals.css";
 import "@/components/reactbits/SpotlightCard.css";
 import "@/components/reactbits/GooeyNav.css";
 import "@/components/reactbits/TrueFocus.css";
+import "@/components/reactbits/GradientASCII.css";
+import "@/components/reactbits/ScrollStack.css";
+
+const inter = Inter({ variable: "--font-body", subsets: ["latin"], display: "swap", weight: ["300","400","500","600","700"] });
+const instrumentSerif = Instrument_Serif({ variable: "--font-display", subsets: ["latin"], display: "swap", style: ["italic"], weight: ["400"] });
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
@@ -99,12 +105,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${spaceGrotesk.variable} ${manrope.variable} ${geistMono.variable}`}
+      className={`${inter.variable} ${instrumentSerif.variable} ${spaceGrotesk.variable} ${manrope.variable} ${geistMono.variable}`}
     >
       <head>
         <script id="portfolio-theme" dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased selection:bg-[var(--accent-primary-muted)] selection:text-[var(--text-primary)]">
+      <body className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased selection:bg-[var(--accent-primary-muted)] selection:text-[var(--text-primary)] transition-colors duration-700 ease-in-out">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -140,6 +146,7 @@ export default function RootLayout({
             }).replace(/</g, "\\u003c"),
           }}
         />
+        <BackgroundGlow />
         {children}
       </body>
     </html>

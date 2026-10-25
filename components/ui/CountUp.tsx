@@ -22,7 +22,7 @@ export function CountUp({
 }: CountUpProps) {
   const shouldReduceMotion = useReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(end); // server-render real value
   const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {

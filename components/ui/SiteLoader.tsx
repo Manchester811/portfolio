@@ -14,8 +14,14 @@ export function SiteLoader() {
 
   useEffect(() => {
     const storageKey = "rj-portfolio-loader-seen";
-    const returningVisitor = window.sessionStorage.getItem(storageKey) === "1";
-    window.sessionStorage.setItem(storageKey, "1");
+    let returningVisitor = false;
+    try {
+      returningVisitor = window.sessionStorage.getItem(storageKey) === "1";
+      window.sessionStorage.setItem(storageKey, "1");
+    } catch {
+      // Private browsing and embedded webviews may deny sessionStorage. The
+      // loader still works; it simply behaves like a first visit each time.
+    }
 
     const sources = [framePath(0), framePath(1), "/assets/avatar.jpg"];
     let loaded = 0;

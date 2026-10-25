@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { workPrinciples } from "@/data/workPrinciples";
 import { MotionSection } from "@/components/ui/MotionSection";
+import { BlurText } from "@/components/reactbits/BlurText";
 
 export function HowIWork() {
   const [open, setOpen] = useState(workPrinciples[0]?.id ?? "");
@@ -16,7 +17,9 @@ export function HowIWork() {
         <div className="mb-10 grid gap-6 border-b border-[var(--border-default)] pb-6 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-8">
             <span className="label block">04 / How I work</span>
-            <h2 className="heading-display mt-5 text-[var(--text-primary)]">A clear way to build <span className="text-[var(--text-muted)]">intelligent systems.</span></h2>
+            <BlurText animateOnMount duration={0.7} blur={4}>
+              <h2 className="heading-display mt-5 text-[var(--text-primary)]">A clear way to build <span className="text-[var(--text-muted)]">intelligent systems.</span></h2>
+            </BlurText>
           </div>
           <p className="body-text-sm lg:col-span-4 lg:pb-1">A practical set of principles shaped by project work, coursework, and hands-on learning.</p>
         </div>
@@ -39,9 +42,9 @@ export function HowIWork() {
                   onClick={() => setOpen(isOpen ? "" : principle.id)}
                   className="flex w-full cursor-pointer items-start justify-between gap-5 text-left focus-visible:outline-none"
                 >
-                  <span className="flex items-start gap-4">
+                  <span className="flex min-w-0 items-start gap-4">
                     <span className="font-mono text-[10px] tracking-[0.2em] text-[var(--text-muted)]">0{index + 1}</span>
-                    <span className="font-display text-xl font-bold uppercase tracking-[-0.03em] text-[var(--text-primary)]">{principle.title}</span>
+                    <span className="min-w-0 break-words font-display text-xl font-bold uppercase tracking-[-0.03em] text-[var(--text-primary)]">{principle.title}</span>
                   </span>
                   <ChevronDown className={`mt-0.5 h-5 w-5 shrink-0 text-[var(--text-muted)] transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
                 </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { motion } from "motion/react";
+import { useReducedMotion } from "framer-motion";
 
 interface TrueFocusProps {
   sentence?: string;
@@ -31,18 +31,18 @@ export const TrueFocus: React.FC<TrueFocusProps> = ({
   const [focusIndex, setFocusIndex] = useState(0);
   const words = sentence.split(/\s+/);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const reduced = typeof window !== "undefined" ? window.matchMedia?.("(prefers-reduced-motion: reduce)").matches : false;
+  const reduced = useReducedMotion() === true;
 
   const cycle = useCallback(() => {
-    if (reduced) return;
+    if (reduced || focusWords.length === 0) return;
     setFocusIndex((prev) => (prev + 1) % focusWords.length);
   }, [focusWords.length, reduced]);
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || focusWords.length === 0) return;
     timerRef.current = setInterval(cycle, (animationDuration + pauseBetweenAnimations) * 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [cycle, animationDuration, pauseBetweenAnimations, reduced]);
+  }, [cycle, animationDuration, pauseBetweenAnimations, reduced, focusWords.length]);
 
   return (
     <div className={`true-focus ${className}`} aria-label={sentence} role="text">

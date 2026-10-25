@@ -32,16 +32,19 @@ async function assertTheme(page, theme) {
 }
 
 async function navigate(page, label, id, mobile, reduced) {
-  if (mobile) await page.getByRole("button", { name: "Open menu", exact: true }).click();
+  if (mobile) await page.getByRole("button", { name: "Open navigation menu", exact: true }).click();
   const navigation = page.getByRole("navigation", { name: mobile ? "Mobile" : "Primary", exact: true });
-  await navigation.getByRole("button", { name: label, exact: true }).click();
+  const control = mobile
+    ? navigation.getByRole("button", { name: label, exact: true })
+    : navigation.getByRole("link", { name: label, exact: true });
+  await control.click();
   await page.waitForTimeout(reduced ? 500 : 1500);
   const section = await page.locator(`#${id}`).boundingBox();
   const bar = await page.locator("header > .glass-pill").boundingBox();
   assert.ok(section.y >= bar.y + bar.height - 1, `${label} is hidden under the navbar: ${section.y}`);
   assert.ok(section.y < 240, `${label} did not navigate to its section: ${section.y}`);
-  if (mobile) await page.getByRole("button", { name: "Open menu", exact: true }).click();
-  assert.equal(await navigation.getByRole("button", { name: label, exact: true }).getAttribute("aria-current"), "location");
+  if (mobile) await page.getByRole("button", { name: "Open navigation menu", exact: true }).click();
+  assert.equal(await control.getAttribute("aria-current"), mobile ? "location" : "page");
   if (mobile) await page.keyboard.press("Escape");
 }
 
@@ -72,7 +75,7 @@ try {
     if (mobile) {
       const toggle = page.getByRole("button", { name: "Switch to dark theme" });
       assert.ok((await toggle.boundingBox()).height >= 44, "Theme touch target is too small");
-      const menu = page.getByRole("button", { name: "Open menu", exact: true });
+      const menu = page.getByRole("button", { name: "Open navigation menu", exact: true });
       await menu.focus();
       await page.keyboard.press("Enter");
       await page.keyboard.press("Tab");
@@ -90,13 +93,13 @@ try {
       assert.equal(await panel.getByRole("link", { name: "GitHub", exact: true }).getAttribute("href"), "https://github.com/Manchester811");
       await toggle.click();
       await assertTheme(page, "dark");
-      assert.equal(await page.getByRole("button", { name: "Close menu", exact: true }).getAttribute("aria-expanded"), "true");
+      assert.equal(await page.getByRole("button", { name: "Close navigation menu", exact: true }).getAttribute("aria-expanded"), "true");
       await page.mouse.click(8, height - 8);
       await panel.waitFor({ state: "hidden" });
-      await page.getByRole("button", { name: "Open menu", exact: true }).click();
+      await page.getByRole("button", { name: "Open navigation menu", exact: true }).click();
       await page.setViewportSize({ width: 1280, height: 800 });
       await page.setViewportSize({ width, height });
-      await page.getByRole("button", { name: "Open menu", exact: true }).waitFor();
+      await page.getByRole("button", { name: "Open navigation menu", exact: true }).waitFor();
     }
     console.log(`PASS ${width}×${height}: compact layout, both themes, six destinations, active states, home${mobile ? ", menu keyboard/touch/outside-click/resize" : ""}`);
     await context.close();

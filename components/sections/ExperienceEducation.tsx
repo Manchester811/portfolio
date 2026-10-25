@@ -60,11 +60,11 @@ export const ExperienceEducation: React.FC = () => {
                   transition={{ duration: 0.75, delay: 0.05 * index, ease }}
                   className="group border-b border-[var(--border-subtle)] py-8 transition-colors duration-500 hover:bg-[rgba(255,255,255,0.015)] md:py-10"
                 >
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="font-mono text-[var(--text-label)] tracking-[0.08em] text-[var(--text-primary)]">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+                    <p className="min-w-0 font-mono text-[var(--text-label)] tracking-[0.08em] text-[var(--text-primary)]">
                       {exp.period}
                     </p>
-                    <p className="font-mono text-[var(--text-micro)] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                    <p className="shrink-0 text-right font-mono text-[var(--text-micro)] uppercase tracking-[0.18em] text-[var(--text-muted)]">
                       {exp.type}
                     </p>
                   </div>
@@ -122,11 +122,11 @@ export const ExperienceEducation: React.FC = () => {
                 transition={{ duration: 0.85, delay: 0.05 * index, ease }}
                 className="border-t border-[var(--border-default)] py-8 md:py-10"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <p className="font-mono text-[clamp(1.15rem,1.8vw,1.5rem)] tracking-[-0.01em] text-[var(--text-primary)]">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+                  <p className="min-w-0 font-mono text-[clamp(1.15rem,1.8vw,1.5rem)] tracking-[-0.01em] text-[var(--text-primary)]">
                     {edu.period}
                   </p>
-                  <p className="font-mono text-[var(--text-micro)] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                  <p className="shrink-0 text-right font-mono text-[var(--text-micro)] uppercase tracking-[0.18em] text-[var(--text-muted)]">
                     {edu.location}
                   </p>
                 </div>

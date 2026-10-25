@@ -32,6 +32,8 @@ export const CommandPalette: React.FC = () => {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
   const { scrollTo } = useSmoothScroll();
 
   const navigate = useCallback(
@@ -95,12 +97,51 @@ export const CommandPalette: React.FC = () => {
       }
       if (e.key === "Escape") setOpen(false);
     };
+    const openFromControl = () => {
+      setOpen(true);
+      setQuery("");
+      setSelected(0);
+    };
     window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    window.addEventListener("open-command-palette", openFromControl);
+    return () => {
+      window.removeEventListener("keydown", handler);
+      window.removeEventListener("open-command-palette", openFromControl);
+    };
   }, []);
 
   useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 50);
+    if (!open) return;
+
+    previousFocus.current = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 50);
+
+    const handleDialogKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        "button, input, [href], [tabindex]:not([tabindex='-1'])"
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleDialogKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener("keydown", handleDialogKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previousFocus.current?.focus();
+    };
   }, [open]);
 
   // Reset the selection whenever the query changes. Doing this in the event
@@ -147,6 +188,7 @@ export const CommandPalette: React.FC = () => {
             role="dialog"
             aria-modal="true"
             aria-label="Command palette"
+            ref={dialogRef}
             onKeyDown={handleKeyDown}
           >
             <div className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-default)] shadow-[0_24px_70px_rgba(0,0,0,0.85)] overflow-hidden font-sans">
@@ -160,7 +202,7 @@ export const CommandPalette: React.FC = () => {
                   placeholder="Type a command or jump to section…"
                   className="flex-1 bg-transparent text-sm text-[var(--text-primary)] font-medium placeholder:text-[var(--text-muted)] outline-none"
                 />
-                <button onClick={() => setOpen(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                <button type="button" onClick={() => setOpen(false)} aria-label="Close command palette" className="flex min-h-11 min-w-11 items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -184,7 +226,7 @@ export const CommandPalette: React.FC = () => {
                             key={cmd.id}
                             onClick={cmd.action}
                             onMouseEnter={() => setSelected(idx)}
-                            className={`w-full flex items-center gap-3 px-5 py-3 text-left transition-colors cursor-pointer ${
+                            className={`w-full min-h-11 flex items-center gap-3 px-5 py-3 text-left transition-colors cursor-pointer ${
                               selected === idx
                                 ? "bg-[var(--accent-primary-muted)] text-[var(--text-accent)] border-l-2 border-[var(--accent-primary)]"
                                 : "text-[var(--text-secondary)] hover:bg-[var(--accent-muted)] border-l-2 border-transparent"
@@ -193,10 +235,10 @@ export const CommandPalette: React.FC = () => {
                             <span className="shrink-0">
                               {cmd.icon}
                             </span>
-                            <span className="flex-1">
+                            <span className="min-w-0 flex-1">
                               <span className="text-xs font-semibold uppercase tracking-wide">{cmd.label}</span>
                               {cmd.description && (
-                                <span className={`block text-[10px] ${selected === idx ? "text-[var(--text-accent)]/70" : "text-[var(--text-muted)]"}`}>
+                                <span className={`block break-words text-[10px] ${selected === idx ? "text-[var(--text-accent)]/70" : "text-[var(--text-muted)]"}`}>
                                   {cmd.description}
                                 </span>
                               )}
