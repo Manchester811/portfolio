@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { motion } from "motion/react";
 
 interface TrueFocusProps {
   sentence?: string;

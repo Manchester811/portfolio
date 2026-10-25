@@ -24,8 +24,19 @@ const items: GooeyItem[] = [
 export const GooeyNav = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [pillStyle, setPillStyle] = useState<{ x: number; w: number } | null>(null);
   const shouldReduce = useReducedMotion();
   const navRef = useRef<HTMLElement>(null);
+  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+
+  const measurePill = useCallback(() => {
+    const inner = navRef.current;
+    const active = itemRefs.current[activeIndex];
+    if (!inner || !active) return;
+    const innerRect = inner.getBoundingClientRect();
+    const itemRect = active.getBoundingClientRect();
+    setPillStyle({ x: itemRect.left - innerRect.left, w: itemRect.width });
+  }, [activeIndex]);
 
   // Track active section
   useEffect(() => {
@@ -47,6 +58,14 @@ export const GooeyNav = () => {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => { measurePill(); }, [measurePill]);
+  useEffect(() => {
+    if (shouldReduce) return;
+    const onResize = () => requestAnimationFrame(measurePill);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [measurePill, shouldReduce]);
+
   const handleClick = useCallback((index: number, href: string) => {
     setActiveIndex(index);
     const id = href.replace("#", "");
@@ -66,6 +85,7 @@ export const GooeyNav = () => {
           return (
             <a
               key={item.id}
+              ref={(el) => { itemRefs.current[i] = el; }}
               href={item.href}
               onClick={(e) => { e.preventDefault(); handleClick(i, item.href); }}
               onMouseEnter={() => setHoverIndex(i)}
@@ -84,8 +104,15 @@ export const GooeyNav = () => {
             </a>
           );
         })}
-        {/* Fallback pill when WebGL unavailable — shown via CSS only when needed */}
-        <span className="gooey-nav-pill" aria-hidden="true" style={{ transform: `translateX(${activeIndex * 100}%)` }} />
+        <span
+          className="gooey-nav-pill"
+          aria-hidden="true"
+          style={
+            pillStyle
+              ? { transform: `translateX(${pillStyle.x}px)`, width: `${pillStyle.w}px`, opacity: shouldReduce ? 0.45 : 1 }
+              : { opacity: 0 }
+          }
+        />
       </div>
     </nav>
   );

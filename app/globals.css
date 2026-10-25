@@ -24,6 +24,12 @@
   --bg-card: #151515;
   --bg-card-hover: #1C1C1C;
   --bg-card-active: #252525;
+  --bg-grid-color: rgb(117 126 255 / 0.055);
+  --bg-ambient-violet: rgb(80 64 204 / 0.16);
+  --bg-ambient-blue: rgb(33 103 219 / 0.11);
+  --bg-ambient-cyan: rgb(0 169 220 / 0.055);
+  --bg-spotlight: rgb(111 96 255 / 0.12);
+  --hero-track-height: 180vh;
 
   /* Borders — Thin Grey Lines (rgba 0.10–0.16 as specified) */
   --border-subtle: rgba(255, 255, 255, 0.07);
@@ -139,6 +145,12 @@
   --bg-card: #F2F2EF;
   --bg-card-hover: #E9E9E6;
   --bg-card-active: #DFDFDB;
+  --bg-grid-color: rgb(61 70 120 / 0.065);
+  --bg-ambient-violet: rgb(111 105 190 / 0.1);
+  --bg-ambient-blue: rgb(73 133 189 / 0.08);
+  --bg-ambient-cyan: rgb(41 131 163 / 0.04);
+  --bg-spotlight: rgb(91 100 180 / 0.075);
+  --hero-track-height: 180vh;
   --border-subtle: rgba(27, 27, 25, 0.09);
   --border-default: rgba(27, 27, 25, 0.15);
   --border-hover: rgba(27, 27, 25, 0.24);
@@ -250,9 +262,37 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans), system-ui, sans-serif;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+main,
+section,
+article,
+header,
+footer,
+nav,
+form,
+fieldset,
+dl,
+ul,
+ol {
+  min-width: 0;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  touch-action: manipulation;
 }
 
 .font-display {
@@ -270,32 +310,88 @@ body {
   color: var(--text-primary);
 }
 
-/* ─── Subtle atmospheric background — Noise/Gradient only ─── */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background-image:
-    radial-gradient(ellipse at 82% 8%, rgba(var(--foreground-rgb),0.09) 0%, transparent 42%),
-    radial-gradient(ellipse at 8% 58%, rgba(var(--foreground-rgb),0.035) 0%, transparent 46%);
-  opacity: 1;
+/* ─── Shared portfolio background system ─────────────────────────────────── */
+.portfolio-background {
+  isolation: isolate;
+  background: var(--bg-primary);
 }
 
-body::after {
-  content: "";
-  position: fixed;
+.portfolio-background__grid,
+.portfolio-background__ambient,
+.portfolio-background__spotlight {
+  position: absolute;
   inset: 0;
-  pointer-events: none;
-  z-index: 0;
+}
+
+.portfolio-background .portfolio-gradient-ascii {
+  position: absolute;
+  inset: 0;
+}
+
+.portfolio-background__grid {
   background-image:
-    linear-gradient(rgba(var(--foreground-rgb),.026) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(var(--foreground-rgb),.026) 1px, transparent 1px);
-  background-size: 88px 88px;
-  opacity: 0.42;
-  -webkit-mask-image: radial-gradient(ellipse at center, black 34%, transparent 78%);
-  mask-image: radial-gradient(ellipse at center, black 34%, transparent 78%);
+    linear-gradient(var(--bg-grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid-color) 1px, transparent 1px);
+  background-size: 72px 72px;
+  -webkit-mask-image: radial-gradient(ellipse at center, black 24%, transparent 82%);
+  mask-image: radial-gradient(ellipse at center, black 24%, transparent 82%);
+  opacity: 0.75;
+}
+
+.portfolio-background__ambient {
+  background:
+    radial-gradient(circle at 12% 12%, var(--bg-ambient-violet), transparent 34%),
+    radial-gradient(circle at 88% 26%, var(--bg-ambient-blue), transparent 30%),
+    radial-gradient(circle at 58% 82%, var(--bg-ambient-cyan), transparent 36%);
+  filter: blur(18px);
+  opacity: 0.72;
+  transform: translateZ(0);
+  animation: portfolio-ambient-drift 22s ease-in-out infinite alternate;
+}
+
+@keyframes portfolio-ambient-drift {
+  from {
+    transform: translate3d(-1%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(1%, 1%, 0) scale(1.06);
+  }
+}
+
+.portfolio-gradient-ascii {
+  opacity: 0.46;
+  background:
+    radial-gradient(circle at 22% 16%, rgb(77 70 160 / 0.08), transparent 34%),
+    radial-gradient(circle at 78% 52%, rgb(42 155 221 / 0.06), transparent 36%);
+}
+
+.portfolio-background__spotlight {
+  --spotlight-x: 50%;
+  --spotlight-y: 30%;
+  background: radial-gradient(
+    circle 18rem at var(--spotlight-x) var(--spotlight-y),
+    var(--bg-spotlight),
+    transparent 72%
+  );
+  opacity: 0.8;
+  transition: opacity 500ms var(--ease-out);
+}
+
+@media (pointer: coarse) {
+  .portfolio-background__spotlight {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-background__ambient,
+  .portfolio-background__spotlight {
+    transition: none;
+  }
+
+  .portfolio-background__ambient {
+    animation: none;
+  }
 }
 
 /* ─── Vignette overlay ─── */
@@ -711,6 +807,7 @@ summary:focus-visible {
   line-height: 1.85;
   color: var(--text-secondary);
   max-width: 55ch;
+  overflow-wrap: anywhere;
 }
 
 /* ─── Chip / badge — Neutral ─── */
@@ -1065,5 +1162,64 @@ summary:focus-visible {
 @media (max-width: 768px) {
   .section-gap {
     height: var(--space-3xl);
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --hero-track-height: 150vh;
+    --section-padding: clamp(20px, 5vw, 28px);
+  }
+
+  .section-container {
+    border-radius: var(--radius-xl);
+  }
+
+  .heading-hero {
+    font-size: clamp(3rem, 14vw, 5.75rem);
+  }
+
+  .heading-display {
+    font-size: clamp(2.25rem, 11vw, 5rem);
+  }
+
+  .heading-major {
+    font-size: clamp(1.9rem, 9vw, 3.5rem);
+  }
+
+  .body-text,
+  .body-text-sm,
+  .body-text-lg {
+    max-width: none;
+  }
+
+  .label,
+  .label-muted,
+  .meta-text,
+  .meta-text-sm {
+    overflow-wrap: anywhere;
+  }
+
+  .input-field {
+    font-size: 16px;
+  }
+
+  .portfolio-background__grid {
+    background-size: 56px 56px;
+  }
+
+  .portfolio-background__ambient {
+    filter: blur(12px);
+    opacity: 0.58;
+  }
+
+  .portfolio-background .portfolio-gradient-ascii {
+    opacity: 0.3;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  :root {
+    --section-padding: clamp(28px, 4vw, 48px);
   }
 }

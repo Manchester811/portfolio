@@ -2,10 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Manrope, Geist_Mono } from "next/font/google";
 import { personalConfig, siteConfig } from "@/data/config";
 import { themeInitScript } from "@/lib/theme";
+import { BackgroundGlow } from "@/components/layout/BackgroundGlow";
 import "./globals.css";
 import "@/components/reactbits/SpotlightCard.css";
 import "@/components/reactbits/GooeyNav.css";
 import "@/components/reactbits/TrueFocus.css";
+import "@/components/reactbits/GradientASCII.css";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
@@ -140,6 +142,7 @@ export default function RootLayout({
             }).replace(/</g, "\\u003c"),
           }}
         />
+        <BackgroundGlow />
         {children}
       </body>
     </html>

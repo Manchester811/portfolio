@@ -70,10 +70,10 @@ export const Skills: React.FC = () => {
           {skillCategories.map((cat, index) => (
             <div
               key={cat.id}
-              className="min-h-full"
+              className="min-h-full min-w-0"
             >
               <SpotlightCard
-                className="spotlight-card--skill group flex flex-col border border-[var(--border-default)] p-5 transition-[border-color,transform] duration-500 hover:-translate-y-0.5 hover:border-[var(--border-hover)] sm:p-6"
+                className="spotlight-card--skill group flex min-w-0 flex-col border border-[var(--border-default)] p-5 transition-[border-color,transform] duration-500 hover:-translate-y-0.5 hover:border-[var(--border-hover)] sm:p-6"
                 spotlightColor="var(--text-primary)"
                 intensity={0.13}
                 spotlightSize={230}

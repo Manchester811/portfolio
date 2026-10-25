@@ -160,7 +160,7 @@ export const CommandPalette: React.FC = () => {
                   placeholder="Type a command or jump to section…"
                   className="flex-1 bg-transparent text-sm text-[var(--text-primary)] font-medium placeholder:text-[var(--text-muted)] outline-none"
                 />
-                <button onClick={() => setOpen(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
+                <button type="button" onClick={() => setOpen(false)} aria-label="Close command palette" className="flex min-h-11 min-w-11 items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -184,7 +184,7 @@ export const CommandPalette: React.FC = () => {
                             key={cmd.id}
                             onClick={cmd.action}
                             onMouseEnter={() => setSelected(idx)}
-                            className={`w-full flex items-center gap-3 px-5 py-3 text-left transition-colors cursor-pointer ${
+                            className={`w-full min-h-11 flex items-center gap-3 px-5 py-3 text-left transition-colors cursor-pointer ${
                               selected === idx
                                 ? "bg-[var(--accent-primary-muted)] text-[var(--text-accent)] border-l-2 border-[var(--accent-primary)]"
                                 : "text-[var(--text-secondary)] hover:bg-[var(--accent-muted)] border-l-2 border-transparent"
@@ -193,10 +193,10 @@ export const CommandPalette: React.FC = () => {
                             <span className="shrink-0">
                               {cmd.icon}
                             </span>
-                            <span className="flex-1">
+                            <span className="min-w-0 flex-1">
                               <span className="text-xs font-semibold uppercase tracking-wide">{cmd.label}</span>
                               {cmd.description && (
-                                <span className={`block text-[10px] ${selected === idx ? "text-[var(--text-accent)]/70" : "text-[var(--text-muted)]"}`}>
+                                <span className={`block break-words text-[10px] ${selected === idx ? "text-[var(--text-accent)]/70" : "text-[var(--text-muted)]"}`}>
                                   {cmd.description}
                                 </span>
                               )}

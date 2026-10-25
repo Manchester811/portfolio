@@ -111,14 +111,14 @@ export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose
             className="relative z-10 my-8 w-full max-w-4xl overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--bg-card)] shadow-[0_24px_80px_rgba(0,0,0,0.85)]"
           >
             {/* Ribbon */}
-            <div className="flex items-center justify-between gap-4 border-b border-[var(--border-subtle)] bg-[var(--bg-primary)] px-6 py-3.5 font-mono text-[var(--text-micro)] uppercase tracking-[0.2em]">
-              <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-between gap-3 border-b border-[var(--border-subtle)] bg-[var(--bg-primary)] px-4 py-3.5 font-mono text-[var(--text-micro)] uppercase tracking-[0.16em] sm:gap-4 sm:px-6 sm:tracking-[0.2em]">
+              <div className="flex min-w-0 items-center gap-2.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" />
-                <span className="font-semibold text-[var(--text-accent)]">
+                <span className="min-w-0 break-words font-semibold text-[var(--text-accent)]">
                   Case Study // {project.id.toUpperCase()}
                 </span>
               </div>
-              <span className="shrink-0 font-semibold text-[var(--text-muted)]">
+              <span className="shrink-0 text-right font-semibold text-[var(--text-muted)]">
                 {project.status ?? project.category}
               </span>
             </div>
@@ -130,7 +130,7 @@ export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose
               whileTap={{ scale: 0.9 }}
               transition={{ duration: 0.2 }}
               aria-label="Close case study"
-              className="absolute right-4 top-12 z-20 cursor-pointer rounded-full border border-[var(--border-default)] bg-[var(--bg-primary)]/90 p-2.5 text-[var(--text-secondary)] transition-colors duration-300 hover:border-[var(--border-accent)] hover:text-[var(--text-accent)]"
+            className="absolute right-3 top-12 z-20 cursor-pointer rounded-full border border-[var(--border-default)] bg-[var(--bg-primary)]/90 p-2.5 text-[var(--text-secondary)] transition-colors duration-300 hover:border-[var(--border-accent)] hover:text-[var(--text-accent)] sm:right-4"
             >
               <X className="h-5 w-5" />
             </motion.button>
@@ -166,7 +166,7 @@ export const ProjectDossier: React.FC<ProjectDossierProps> = ({ project, onClose
             </div>
 
             {/* Body */}
-            <div className="max-h-[62vh] space-y-8 overflow-y-auto p-6 sm:p-8">
+            <div className="max-h-[62vh] space-y-8 overflow-y-auto p-4 sm:p-8">
               <div>
                 <h3 className="font-display text-[clamp(1.5rem,3vw,2.25rem)] font-bold uppercase leading-[1.05] tracking-[-0.035em] text-[var(--text-primary)]">
                   {project.title}

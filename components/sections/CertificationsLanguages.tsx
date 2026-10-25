@@ -53,12 +53,12 @@ export const CertificationsLanguages: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-70px" }}
               transition={{ duration: 0.65, delay: 0.04 * index, ease }}
-              className="group flex flex-col gap-4 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-card)] p-5 transition-colors duration-500 hover:border-[var(--border-hover)]"
+              className="group flex min-w-0 flex-col gap-4 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-card)] p-5 transition-colors duration-500 hover:border-[var(--border-hover)]"
             >
               {/* name + issuer */}
               <div className="flex items-start gap-3">
                 <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-[var(--text-primary)]" aria-hidden="true" />
-                <h3 className="text-[var(--text-body-sm)] font-semibold leading-snug text-[var(--text-primary)]">
+                <h3 className="min-w-0 break-words text-[var(--text-body-sm)] font-semibold leading-snug text-[var(--text-primary)]">
                   {cert.name}
                 </h3>
               </div>

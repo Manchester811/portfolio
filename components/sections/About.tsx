@@ -55,7 +55,7 @@ export const About: React.FC = () => {
         >
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-12">
           {/* ---------- LEFT — HEADING + STATEMENT + PROFILE ---------- */}
-          <div className="lg:col-span-7">
+          <div className="min-w-0 lg:col-span-7">
             <motion.h2
               initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -111,7 +111,7 @@ export const About: React.FC = () => {
                     <dt className="font-mono text-[var(--text-micro)] uppercase tracking-[0.18em] text-[var(--text-muted)]">
                       {fact.label}
                     </dt>
-                    <dd className="text-[var(--text-body-sm)] font-medium text-[var(--text-primary)]">
+                    <dd className="break-words text-[var(--text-body-sm)] font-medium text-[var(--text-primary)]">
                       {fact.value}
                     </dd>
                   </div>
@@ -121,7 +121,7 @@ export const About: React.FC = () => {
           </div>
 
           {/* ---------- RIGHT — 2x2 CAPABILITY CARDS ---------- */}
-          <div className="lg:col-span-5">
+          <div className="min-w-0 lg:col-span-5">
             <p className="label-muted mb-5">Capabilities</p>
             <div className="grid grid-cols-2 gap-3">
               {capabilities.map((area, i) => (
@@ -131,12 +131,12 @@ export const About: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-60px" }}
                   transition={{ duration: 0.5, delay: 0.04 * i, ease }}
-                  className="flex items-center gap-3 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-card)] px-4 py-4 transition-colors duration-300 hover:border-[var(--border-hover)]"
+                  className="flex min-w-0 items-center gap-3 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-card)] px-4 py-4 transition-colors duration-300 hover:border-[var(--border-hover)]"
                 >
                   <span className="shrink-0 font-mono text-[var(--text-label-sm)] tracking-[0.1em] text-[var(--text-muted)]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="text-[var(--text-body-sm)] font-medium text-[var(--text-primary)]">
+                  <span className="min-w-0 break-words text-[var(--text-body-sm)] font-medium text-[var(--text-primary)]">
                     {area}
                   </span>
                 </motion.div>

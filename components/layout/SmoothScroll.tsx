@@ -25,7 +25,7 @@ export const SmoothScrollProvider: React.FC<{ children: React.ReactNode }> = ({ 
     if (shouldReduceMotion) return;
 
     const lenis = new Lenis({
-      duration: 1.1,
+      duration: 1.4,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",

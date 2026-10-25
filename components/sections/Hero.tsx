@@ -11,6 +11,7 @@ import { useFrameSequence } from "@/components/scroll/useFrameSequence";
 import { framePath } from "@/components/scroll/frameSequence";
 import { MagneticElement } from "@/components/motion/MagneticElement";
 import { TrueFocus } from "@/components/reactbits/TrueFocus";
+import { BlurText } from "@/components/reactbits/BlurText";
 import { projectsData } from "@/data/projects";
 import { certificationsData } from "@/data/certifications";
 import { educationData } from "@/data/education";
@@ -22,14 +23,12 @@ const ease = [0.16, 1, 0.3, 1] as const;
 /**
  * Total scroll track, in viewport heights.
  * The sticky viewport occupies one of these, so the sequence gets
- * SCROLL_LENGTH_VH - 100 viewport-heights of pinned playback (240 frames
+ * The responsive hero track length - 100 viewport-heights of pinned playback (240 frames
  * mapped across that range) before the next section arrives.
  * Keep enough track length for the sticky viewport to remain pinned while the
  * portrait sequence plays. The full-bleed composition prevents that longer
  * pinned range from becoming an empty black stretch.
  */
-const SCROLL_LENGTH_VH = 180;
-
 /**
  * Hero text fade ranges - synchronized with the same scroll progress
  * 0-0.3: Full visibility
@@ -65,7 +64,7 @@ export const Hero: React.FC = () => {
       ref={sectionRef}
       className="relative w-full bg-[var(--bg-primary)]"
       style={{
-        height: shouldReduceMotion ? "100dvh" : `${SCROLL_LENGTH_VH}vh`,
+        height: shouldReduceMotion ? "100dvh" : "var(--hero-track-height)",
       }}
     >
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
@@ -125,12 +124,12 @@ export const Hero: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease }}
             style={{ y: shouldReduceMotion ? 0 : heroContentY }}
-            className="pointer-events-auto absolute inset-y-0 left-0 z-10 flex w-full max-w-[650px] flex-col justify-center px-6 pb-8 pt-20 sm:px-10 lg:px-16 xl:px-20"
+            className="pointer-events-auto absolute inset-y-0 left-0 z-10 flex w-full max-w-[650px] flex-col justify-center px-5 pb-10 pt-24 sm:px-10 sm:pb-8 sm:pt-20 lg:px-16 xl:px-20"
           >
             {/* Eyebrow */}
-            <span className="mb-4 flex items-center gap-3">
+            <span className="mb-4 flex flex-wrap items-center gap-2 sm:gap-3">
               <span className="h-px w-8 bg-[var(--text-primary)]" />
-              <span className="label">Computer Science Engineer · Data Science</span>
+              <span className="label leading-relaxed">Computer Science Engineer · Data Science</span>
             </span>
 
             {/* Name */}
@@ -142,14 +141,14 @@ export const Hero: React.FC = () => {
                 visible: { transition: { staggerChildren: shouldReduceMotion ? 0 : 0.08 } },
               }}
                aria-label="RJ — Rishabh Jain, Data Science"
-              className="font-display text-[clamp(2.8rem,7vw,7rem)] font-bold uppercase leading-[0.86] tracking-[-0.06em]"
+               className="font-display text-[clamp(2.5rem,13vw,4.75rem)] font-bold uppercase leading-[0.86] tracking-[-0.06em] sm:text-[clamp(2.8rem,7vw,7rem)]"
             >
               {[
                 { text: "Rishabh", className: "text-[var(--text-primary)]" },
                 { text: "Jain", className: "text-[var(--text-primary)]" },
                 { text: "Data", className: "text-[var(--text-muted)]" },
                 { text: "Science", className: "text-[var(--text-muted)]" },
-              ].map((line) => (
+              ].map((line, idx) => (
                 <motion.span
                   key={line.text}
                   variants={{
@@ -158,7 +157,9 @@ export const Hero: React.FC = () => {
                   }}
                   className={`block ${line.className}`}
                 >
-                  {line.text}
+                  <BlurText animateOnMount={false} duration={0.7} delay={idx * 0.08} blur={4}>
+                    {line.text}
+                  </BlurText>
                 </motion.span>
               ))}
             </motion.h1>
@@ -197,12 +198,12 @@ export const Hero: React.FC = () => {
               glow={0.08}
               data-click-spark="hero-cta"
             >
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 <MagneticElement>
                   <a
                     href="#projects"
                     data-cursor-hover
-                    className="btn-primary group px-7 py-3.5 text-[var(--text-label-sm)]"
+                    className="btn-primary group min-h-11 px-5 py-3.5 text-[var(--text-label-sm)] sm:px-7"
                   >
                     <span>View Work</span>
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -214,7 +215,7 @@ export const Hero: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cursor-hover
-                  className="btn-secondary px-6 py-3.5 text-[var(--text-label-sm)]"
+                  className="btn-secondary min-h-11 px-5 py-3.5 text-[var(--text-label-sm)] sm:px-6"
                 >
                   <Download className="h-4 w-4" />
                   <span>Résumé</span>

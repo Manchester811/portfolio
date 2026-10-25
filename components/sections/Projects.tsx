@@ -10,6 +10,7 @@ import { ProjectDossier } from "@/components/ui/ProjectDossier";
 import { MotionSection } from "@/components/ui/MotionSection";
 import { SpotlightCard } from "@/components/reactbits/SpotlightCard";
 import { FadeContent } from "@/components/reactbits/FadeContent";
+import { ClickSpark } from "@/components/reactbits/ClickSpark";
 
 export function Projects() {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -27,7 +28,7 @@ export function Projects() {
             <span className="label block">01 / Work</span>
             <h2 className="heading-display mt-5 text-[var(--text-primary)]">Selected <span className="text-[var(--text-muted)]">systems.</span></h2>
           </div>
-          <a href="https://github.com/Manchester811" target="_blank" rel="noopener noreferrer" className="link-primary inline-flex items-center gap-2 font-mono text-[var(--text-label-sm)] uppercase tracking-[0.18em]" data-cursor-hover>
+          <a href="https://github.com/Manchester811" target="_blank" rel="noopener noreferrer" className="link-primary inline-flex min-h-11 items-center gap-2 font-mono text-[var(--text-label-sm)] uppercase tracking-[0.18em]" data-cursor-hover>
             GitHub <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
           </a>
         </div>
@@ -45,7 +46,7 @@ export function Projects() {
                   aria-selected={active}
                   aria-controls={`project-panel-${item.id}`}
                   onClick={() => setSelectedIndex(index)}
-                  className={`group inline-flex cursor-pointer items-center gap-3 rounded-full border px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-all duration-300 focus-visible:outline-none ${active ? "border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg-primary)]" : "border-[var(--border-default)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"}`}
+                  className={`group inline-flex min-h-11 min-w-fit cursor-pointer items-center gap-3 rounded-full border px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] transition-all duration-300 focus-visible:outline-none ${active ? "border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg-primary)]" : "border-[var(--border-default)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"}`}
                   data-cursor-hover
                 >
                   <span className={active ? "text-[var(--bg-primary)]/60" : "text-[var(--text-dim)]"}>{String(index + 1).padStart(2, "0")}</span>
@@ -78,19 +79,30 @@ export function Projects() {
               initialOpacity={0.08}
               once
             >
-              <SpotlightCard
-                className="spotlight-card--project grid gap-8 border border-[var(--border-default)] p-5 sm:p-6 lg:grid-cols-12 lg:gap-10 lg:p-8"
-                spotlightColor="var(--text-primary)"
-                intensity={0.14}
-                spotlightSize={250}
-                softness={0.82}
-                borderGlow={0.32}
-                proximity={72}
-                smoothing={0.3}
-                flare
-                data-spotlight="project"
+              <ClickSpark
+                className="h-full"
+                sparkSize={8}
+                sparkRadius={25}
+                sparkCount={6}
+                sparkWidth={1.7}
+                duration={420}
+                randomness={0.18}
+                glow={0.07}
+                data-click-spark="project-card"
               >
-                <div className="lg:col-span-5">
+                <SpotlightCard
+                  className="spotlight-card--project grid min-w-0 gap-8 border border-[var(--border-default)] p-5 sm:p-6 lg:grid-cols-12 lg:gap-10 lg:p-8"
+                  spotlightColor="var(--text-primary)"
+                  intensity={0.14}
+                  spotlightSize={250}
+                  softness={0.82}
+                  borderGlow={0.32}
+                  proximity={72}
+                  smoothing={0.3}
+                  flare
+                  data-spotlight="project"
+                >
+                <div className="min-w-0 lg:col-span-5">
                 <div className="mb-6 flex items-center gap-3">
                   <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-primary)]" />
                   <span className="label-muted">{project.badge}</span>
@@ -106,9 +118,9 @@ export function Projects() {
                     { label: "Stack", value: project.technologies?.slice(0, 2).join(" · ") ?? "See project notes" },
                     { label: "Status", value: project.status ?? "Documented" },
                   ].map((stat) => (
-                    <div key={stat.label} className="bg-[var(--bg-primary)] p-4">
+                    <div key={stat.label} className="min-w-0 bg-[var(--bg-primary)] p-4">
                       <dt className="label-muted">{stat.label}</dt>
-                      <dd className="mt-2 text-sm font-medium leading-snug text-[var(--text-primary)]">{stat.value}</dd>
+                      <dd className="mt-2 break-words text-sm font-medium leading-snug text-[var(--text-primary)]">{stat.value}</dd>
                     </div>
                   ))}
                 </dl>
@@ -130,18 +142,19 @@ export function Projects() {
                 </div>
                 </div>
 
-                <div className="lg:col-span-7">
+                <div className="min-w-0 lg:col-span-7">
                 <ArchitectureDiagram project={project} />
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   {project.keyHighlights.slice(0, 4).map((highlight) => (
-                    <div key={highlight} className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-4 text-sm leading-relaxed text-[var(--text-secondary)]">
+                    <div key={highlight} className="flex min-w-0 items-start gap-3 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-4 text-sm leading-relaxed text-[var(--text-secondary)]">
                       <span className="mt-2 h-px w-4 shrink-0 bg-[var(--text-primary)]" aria-hidden="true" />
                       {highlight}
                     </div>
                   ))}
                 </div>
                 </div>
-              </SpotlightCard>
+                </SpotlightCard>
+              </ClickSpark>
             </FadeContent>
           </motion.div>
         </AnimatePresence>

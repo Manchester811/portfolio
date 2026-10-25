@@ -95,10 +95,7 @@
   }
 }
 
-@media (max-width: 768px) {
-  .gooey-nav {
-    top: 12px;
-  }
+@media (max-width: 767px) {
   .gooey-nav-inner {
     padding: 4px 5px;
   }
@@ -106,6 +103,29 @@
     padding: 0 8px;
     min-width: 42px;
     font-size: 12px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 900px) {
+  .gooey-nav-inner {
+    gap: 2px;
+  }
+
+  .gooey-nav-item {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    padding: 0;
+  }
+
+  .gooey-nav-label {
+    display: none;
+  }
+
+  .gooey-nav-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

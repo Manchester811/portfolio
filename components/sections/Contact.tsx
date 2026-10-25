@@ -171,13 +171,13 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
       {open && (
         <motion.div className="fixed inset-0 z-[80] flex items-end justify-center p-3 sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <button type="button" aria-label="Close contact request" onClick={onClose} className="absolute inset-0 cursor-default bg-[rgba(5,5,5,0.84)] backdrop-blur-md" />
-          <motion.div ref={dialogRef} initial={{ y: shouldReduceMotion ? 0 : 32, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: shouldReduceMotion ? 0 : 24, opacity: 0 }} transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: [0.16, 1, 0.3, 1] }} className="relative z-10 max-h-[92dvh] w-full max-w-2xl overflow-y-auto rounded-[var(--radius-xl)] border border-[var(--border-strong)] bg-[var(--bg-card)] p-5 shadow-[0_28px_100px_rgba(0,0,0,0.78)] sm:p-8" data-lenis-prevent>
-            <div className="mb-8 flex items-start justify-between gap-6 border-b border-[var(--border-default)] pb-6">
-              <div>
+          <motion.div ref={dialogRef} initial={{ y: shouldReduceMotion ? 0 : 32, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: shouldReduceMotion ? 0 : 24, opacity: 0 }} transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: [0.16, 1, 0.3, 1] }} className="relative z-10 max-h-[92dvh] w-full max-w-2xl overflow-y-auto rounded-[var(--radius-xl)] border border-[var(--border-strong)] bg-[var(--bg-card)] p-4 shadow-[0_28px_100px_rgba(0,0,0,0.78)] sm:p-8" data-lenis-prevent>
+            <div className="mb-8 flex items-start justify-between gap-4 border-b border-[var(--border-default)] pb-6 sm:gap-6">
+              <div className="min-w-0">
                 <span className="label-muted">Contact / Request</span>
                 <h2 id="contact-modal-title" className="heading-major mt-3 text-[var(--text-primary)]">Let&apos;s make <span className="text-[var(--text-muted)]">something useful.</span></h2>
               </div>
-              <button type="button" onClick={onClose} className="rounded-full border border-[var(--border-default)] p-2.5 text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]" aria-label="Close contact request">
+              <button type="button" onClick={onClose} className="shrink-0 rounded-full border border-[var(--border-default)] p-2.5 text-[var(--text-secondary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]" aria-label="Close contact request">
                 <X className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
@@ -228,7 +228,7 @@ export function Contact() {
           once
         >
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-7">
+          <div className="min-w-0 lg:col-span-7">
             <span className="label block">07 / Contact</span>
             <h2 className="heading-hero mt-6 text-[var(--text-primary)]">Let&apos;s build<br />something<br /><span className="text-[var(--text-muted)]">intelligent.</span></h2>
             <p className="body-text mt-8 max-w-lg">{personalData.status}. Based in {personalData.location}.</p>
@@ -236,11 +236,11 @@ export function Contact() {
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {channels.map((channel) => {
                 const Icon = channel.icon;
-                return <a key={channel.label} href={channel.href} target={channel.href.startsWith("mailto:") || channel.href.startsWith("tel:") ? undefined : "_blank"} rel={channel.href.startsWith("mailto:") || channel.href.startsWith("tel:") ? undefined : "noopener noreferrer"} className="group flex min-w-0 items-center gap-3 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-card)] p-4 transition-colors hover:border-[var(--border-strong)]" data-cursor-hover><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--accent-muted)]"><Icon className="h-4 w-4" aria-hidden="true" /></span><span className="min-w-0"><span className="label-muted block">{channel.label}</span><span className="mt-1 block truncate text-sm text-[var(--text-primary)]">{channel.value}</span></span><span className="ml-auto text-[var(--text-muted)] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true">↗</span></a>;
+                return <a key={channel.label} href={channel.href} target={channel.href.startsWith("mailto:") || channel.href.startsWith("tel:") ? undefined : "_blank"} rel={channel.href.startsWith("mailto:") || channel.href.startsWith("tel:") ? undefined : "noopener noreferrer"} className="group flex min-h-11 min-w-0 items-center gap-3 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-card)] p-4 transition-colors hover:border-[var(--border-strong)]" data-cursor-hover><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--accent-muted)]"><Icon className="h-4 w-4" aria-hidden="true" /></span><span className="min-w-0"><span className="label-muted block">{channel.label}</span><span className="mt-1 block break-words text-sm text-[var(--text-primary)]">{channel.value}</span></span><span className="ml-auto shrink-0 text-[var(--text-muted)] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true">↗</span></a>;
               })}
             </div>
           </div>
-          <div className="flex flex-col justify-end lg:col-span-5">
+          <div className="flex min-w-0 flex-col justify-end lg:col-span-5">
             <div className="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--bg-card)] p-6 sm:p-8">
               <span className="label-muted">A direct line</span>
               <p className="mt-5 text-2xl font-medium leading-snug tracking-[-0.03em] text-[var(--text-primary)]">Have a problem worth solving, a system to evaluate, or a role to discuss?</p>

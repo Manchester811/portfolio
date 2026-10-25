@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { personalData } from "@/data/personal";
-import { ArrowUpRight, Search, Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, Search, X } from "lucide-react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useSmoothScroll } from "@/components/layout/SmoothScroll";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -24,7 +24,6 @@ const navItems: NavItem[] = [
 
 export const Navbar: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>("hero");
-  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -63,13 +62,6 @@ export const Navbar: React.FC = () => {
   }, [mobileMenuOpen]);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 24);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
     if (typeof window === "undefined") return;
 
     const observer = new IntersectionObserver(
@@ -102,25 +94,37 @@ export const Navbar: React.FC = () => {
   return (
     <header
       ref={headerRef}
-      className="fixed left-1/2 top-4 z-50 w-max max-w-[calc(100%-2rem)] -translate-x-1/2 sm:top-6"
+      className="fixed inset-x-2 top-3 z-50 sm:left-1/2 sm:right-auto sm:top-6 sm:w-max sm:max-w-[calc(100%-2rem)] sm:-translate-x-1/2"
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) setMobileMenuOpen(false);
       }}
     >
-      <div className="flex items-center gap-3 lg:gap-5 rounded-full px-4 py-2.5 lg:px-5 lg:py-3 glass-pill" style={{ minWidth: 320 }}>
+      <div className="glass-pill flex w-full min-w-0 items-center gap-2 rounded-full px-2.5 py-2 sm:w-max sm:gap-3 sm:px-4 sm:py-2.5 lg:gap-5 lg:px-5 lg:py-3">
         <a href="#hero" onClick={(e) => { e.preventDefault(); handleNavClick("hero"); }} className="nav-icon-button font-display text-xs font-bold shrink-0" aria-label="Rishabh Jain — back to top" title="Rishabh Jain">
           <span className="flex size-8 items-center justify-center rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)]">RJ</span>
         </a>
 
-        <div className="mx-1 h-4 w-px bg-[var(--border-default)] shrink-0" aria-hidden="true" />
+        <div className="mx-0.5 h-4 w-px shrink-0 bg-[var(--border-default)] sm:mx-1" aria-hidden="true" />
 
-        <div className="flex-1 min-w-0 flex items-center justify-center">
+        <div className="hidden min-w-0 flex-1 items-center justify-center md:flex">
           <GooeyNav />
         </div>
 
         <div className="mx-1 h-4 w-px bg-[var(--border-default)] shrink-0 hidden lg:block" aria-hidden="true" />
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <button
+            ref={menuButtonRef}
+            type="button"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            className="nav-icon-button md:hidden"
+            data-cursor-hover
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+          >
+            {mobileMenuOpen ? <X className="size-4" aria-hidden="true" /> : <Menu className="size-4" aria-hidden="true" />}
+          </button>
           <button type="button" onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true })); }} className="nav-icon-button" data-cursor-hover aria-label="Open command palette" title="Search · Ctrl/⌘ K">
             <Search className="size-4" aria-hidden="true" />
           </button>
@@ -132,7 +136,7 @@ export const Navbar: React.FC = () => {
       </div>
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div id="mobile-navigation" initial={{ opacity: 0, y: shouldReduceMotion ? 0 : -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -6 }} transition={{ duration: shouldReduceMotion ? 0 : 0.16 }} style={{ backgroundColor: "var(--bg-secondary)" }} className="glass-pill absolute left-1/2 top-full mt-2 max-h-[calc(100dvh-7rem)] w-72 max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-y-auto overscroll-contain rounded-[var(--radius-xl)] p-2 lg:hidden" data-lenis-prevent>
+          <motion.div id="mobile-navigation" initial={{ opacity: 0, y: shouldReduceMotion ? 0 : -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -6 }} transition={{ duration: shouldReduceMotion ? 0 : 0.16 }} style={{ backgroundColor: "var(--bg-secondary)" }} className="glass-pill absolute left-0 right-0 top-full mx-auto mt-2 max-h-[calc(100dvh-6rem)] w-full max-w-[20rem] overflow-y-auto overscroll-contain rounded-[var(--radius-xl)] p-2 md:hidden" data-lenis-prevent>
             <nav className="flex flex-col gap-1" aria-label="Mobile">
               {navItems.map((item) => (
                 <button key={item.id} type="button" onClick={() => { menuButtonRef.current?.focus(); handleNavClick(item.id); }} aria-current={activeSection === item.id ? "location" : undefined} className="nav-link flex min-h-11 items-center justify-between rounded-full px-4 text-left text-sm font-medium" data-cursor-hover>
